@@ -7,7 +7,7 @@ class CreateEmployeeDTO
     public function __construct(
         public ?int $id,
         public ?int $user_id,
-        public ?int $department_id,
+        public ?int $branch_id,
         public ?string $position,
         public ?string $from_date,
         public ?string $to_date,
@@ -20,7 +20,7 @@ class CreateEmployeeDTO
         return new self(
             id: null,
             user_id: null,
-            department_id: $request['department_id'] ?? null,
+            branch_id: $request['branch_id'] ?? null,
             position: $request['position'] ?? null,
             from_date: $request['from_date'] ?? null,
             to_date: $request['to_date'] ?? null,
@@ -38,7 +38,7 @@ class CreateEmployeeDTO
     public function getDepInfo()
     {
         return array_filter([
-            'department_id'  => $this->department_id,
+            'branch_id'  => $this->branch_id,
             'role_id'        => $this->role_id,
             'position'       => $this->position,
             'from_date'      => $this->from_date,

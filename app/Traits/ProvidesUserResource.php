@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use App\Http\Resources\V1\EngineerDetailResource;
 use App\Http\Resources\V1\EmployeeDetailResource;
 use App\Http\Resources\V1\ClientDetailResource;
 use App\Http\Resources\V1\UserResource;

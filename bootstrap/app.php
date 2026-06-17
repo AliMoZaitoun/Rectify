@@ -31,7 +31,5 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\V1\SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(
-            fn(Request $request) => $request->is('api/*'),
-        );
+        (new \App\Exceptions\Handler)->register($exceptions);
     })->create();

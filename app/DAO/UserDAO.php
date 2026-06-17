@@ -17,12 +17,12 @@ class UserDAO
 
     public function findById(int $id)
     {
-        return User::find($id) ?? throw new NotFoundException("User");
+        return User::find($id);
     }
 
     public function findByField(string $type, string $value)
     {
-        return User::where($type, $value)->first() ?? throw new NotFoundException("User");
+        return User::where($type, $value)->first();
     }
 
     public function update(int $id, UpdateUserDTO $userDTO)
@@ -43,7 +43,7 @@ class UserDAO
 
     public function findByEmail(string $email)
     {
-        return User::where('email', $email)->first() ?? throw new NotFoundException("User");
+        return User::where('email', $email)->first();
     }
 
     public function delete(int $id)

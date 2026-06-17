@@ -23,7 +23,7 @@ class ClientDAO
 
     public function show(int $id)
     {
-        return Client::where('id', $id)->first() ?? throw new NotFoundException("Client");
+        return Client::where('id', $id)->first();
     }
 
     public function update(int $id, UpdateClientDTO $clientDTO)

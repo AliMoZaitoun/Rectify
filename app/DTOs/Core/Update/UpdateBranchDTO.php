@@ -2,7 +2,7 @@
 
 namespace App\DTOs\Core\Update;
 
-class UpdateDepartmentDTO
+class UpdateBranchDTO
 {
     public function __construct(
         public ?string $name,

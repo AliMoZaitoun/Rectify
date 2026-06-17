@@ -6,7 +6,7 @@ class UpdateEmployeeDTO
 {
     public function __construct(
         public ?int $user_id = null,
-        public ?int $department_id = null,
+        public ?int $branch_id = null,
         public ?string $position = null
     ) {}
 
@@ -14,7 +14,7 @@ class UpdateEmployeeDTO
     {
         return new self(
             position: $request['position'] ?? null,
-            department_id: $request['department_id'] ?? null
+            branch_id: $request['branch_id'] ?? null
         );
     }
 

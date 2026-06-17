@@ -6,7 +6,6 @@ use App\Exceptions\V1\EmailAlreadyVerifiedException;
 use App\Exceptions\V1\InvalidPasswordException;
 use App\Exceptions\V1\InvalidRefreshTokenException;
 use App\Exceptions\V1\Order\OrderAlreadySubmittedException;
-// 🔥 استيراد استثناءات الحضور والـ Geofencing الجديدة بالكامل
 use App\Exceptions\V1\Engineer\Attendance\OutsideGeofenceException;
 use App\Exceptions\V1\Engineer\Attendance\AlreadyCheckedInException;
 use App\Exceptions\V1\Engineer\Attendance\BuildingProjectMismatchException;
@@ -74,14 +73,6 @@ class Handler
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 403);
         });
 
-        $exceptions->render(function (UnitAlreadyFavoritedException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (OrderAlreadySubmittedException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
         $exceptions->render(function (InvalidPasswordException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         });
@@ -92,66 +83,6 @@ class Handler
 
         $exceptions->render(function (EmailAlreadyVerifiedException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
-        });
-
-        $exceptions->render(function (ProjectHasNoBuildingsException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        // ---------------------------------------------------------------------
-        //  Attendance and Geofencing Exceptions
-        // ---------------------------------------------------------------------
-
-        $exceptions->render(function (OutsideGeofenceException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (AlreadyCheckedInException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (DeviceMismatchException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (BuildingRequiredException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (NotCheckedInYetException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (LowGpsAccuracyException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (MockLocationDetectedException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (ShiftTimeoutException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (BuildingProjectMismatchException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (OfflineSyncExpiredException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (InvalidCheckOutTimeException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (EngineerNotCheckedInException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        });
-
-        $exceptions->render(function (CompleteFutureAppointmentException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         });
     }
 }

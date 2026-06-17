@@ -5,6 +5,7 @@ use App\Http\Controllers\V1\Auth\LoginController;
 use App\Http\Controllers\V1\Auth\PasswordManagementController;
 use App\Http\Controllers\V1\Auth\VerificationController;
 use App\Http\Controllers\V1\ClientController;
+use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\OtpController;
 
 Route::post('verifyEmail', [VerificationController::class, 'verifyEmail']);
@@ -22,4 +23,12 @@ Route::post('resendCode', [OtpController::class, 'resendCode']);
 Route::prefix('client')->group(function () {
     Route::get('', [ClientController::class, 'index']);
     Route::post('', [ClientController::class, 'store']);
+    Route::put('', [ClientController::class, 'update']);
+    Route::delete('', [ClientController::class, 'destroy']);
+});
+
+
+Route::prefix('employee')->group(function () {
+    Route::get('', [EmployeeController::class, 'index']);
+    Route::post('', [EmployeeController::class, 'store']);
 });

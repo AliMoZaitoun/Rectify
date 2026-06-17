@@ -2,39 +2,39 @@
 
 namespace App\DAO\Core;
 
-use App\DTOs\Core\Create\CreateDepartmentDTO;
-use App\DTOs\Core\Update\UpdateDepartmentDTO;
+use App\DTOs\Core\Create\CreateBranchDTO;
+use App\DTOs\Core\Update\UpdateBranchDTO;
 use App\Exceptions\NotFoundException;
-use App\Models\Core\Department;
+use App\Models\Core\Branch;
 
-class DepartmentDAO
+class BranchDAO
 {
 
     public function index()
     {
-        return Department::with(['employees', 'employees.employee'])->get();
+        return Branch::with(['employees', 'employees.employee'])->get();
     }
 
     public function store(array $data)
     {
-        return Department::create($data);
+        return Branch::create($data);
     }
 
     public function show(int $id)
     {
-        return Department::where('id', $id)->with('employees')->first() ?? throw new NotFoundException("Department");
+        return Branch::where('id', $id)->with('employees')->first();
     }
 
-    public function update(int $id, UpdateDepartmentDTO $departmentDTO)
+    public function update(int $id, UpdateBranchDTO $branchDTO)
     {
-        $department = $this->show($id);
-        $department->update($departmentDTO->toArray());
-        return $department;
+        $branch = $this->show($id);
+        $branch->update($branchDTO->toArray());
+        return $branch;
     }
 
     public function destroy(int $id)
     {
-        $department = $this->show($id);
-        return $department->delete();
+        $branch = $this->show($id);
+        return $branch->delete();
     }
 }

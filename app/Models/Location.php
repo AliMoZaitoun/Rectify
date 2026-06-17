@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Core\Branch;
 use App\Models\Core\Warehouse;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -21,5 +22,10 @@ class Location extends Model
     public function children()
     {
         return $this->hasMany(Location::class, 'parent_id');
+    }
+
+    public function branches()
+    {
+        return $this->hasMany(Branch::class);
     }
 }

@@ -23,7 +23,7 @@ class PasswordManagementController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $data = $this->passwordService->forgotPassword($request->validated());
+        $data['otp'] = $this->passwordService->forgotPassword($request->validated());
         return $this->successResponse($data, __('messages.auth.otp_sent'));
     }
 

@@ -8,6 +8,7 @@ use App\DTOs\Client\Update\UpdateClientDTO;
 use App\DTOs\User\Update\UpdateUserDTO;
 use App\DTOs\Client\Create\CreateClientDTO;
 use App\DTOs\User\Create\CreateUserDTO;
+use App\Exceptions\NotFoundException;
 use App\Services\OtpService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,7 @@ class ClientService
 
     public function show(int $id)
     {
-        return $this->clientDAO->show($id);
+        return $this->clientDAO->show($id) ?? throw new NotFoundException('Client');
     }
 
     public function profile()
