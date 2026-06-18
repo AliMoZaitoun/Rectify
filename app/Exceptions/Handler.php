@@ -22,6 +22,7 @@ use App\Exceptions\V1\ProjectHasNoBuildingsException;
 use App\Exceptions\V1\Sales\CompleteFutureAppointmentException;
 use App\Traits\ResponseTrait;
 use Exception;
+use Gemini\Exceptions\TransporterException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
@@ -83,6 +84,10 @@ class Handler
 
         $exceptions->render(function (EmailAlreadyVerifiedException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
+        });
+
+        $exceptions->render(function (TransporterException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         });
     }
 }

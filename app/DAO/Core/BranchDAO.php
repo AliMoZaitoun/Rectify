@@ -25,10 +25,10 @@ class BranchDAO
         return Branch::where('id', $id)->with('employees')->first();
     }
 
-    public function update(int $id, UpdateBranchDTO $branchDTO)
+    public function update(int $id, array $data)
     {
         $branch = $this->show($id);
-        $branch->update($branchDTO->toArray());
+        $branch->update($data);
         return $branch;
     }
 

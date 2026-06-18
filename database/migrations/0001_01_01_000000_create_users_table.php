@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('phone');
-            $table->enum('type', ['staff', 'client']);
-            $table->enum('gender', ['male', 'female']);
             $table->string('email')->unique();
+            $table->string('phone')->unique();
+            $table->foreignId('location_id')->constrained()->onDelete('restrict');
+            $table->enum('type', ['admin', 'employee', 'client']);
+            $table->enum('gender', ['male', 'female']);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

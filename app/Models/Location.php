@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Models\Core\Branch;
-use App\Models\Core\Warehouse;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['name', 'type', 'parent_id'])]
+#[Fillable(['name', 'type', 'parent_id', 'code'])]
 class Location extends Model
 {
     protected $casts = [
@@ -27,5 +26,10 @@ class Location extends Model
     public function branches()
     {
         return $this->hasMany(Branch::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 }

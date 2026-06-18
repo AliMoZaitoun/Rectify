@@ -38,7 +38,7 @@ class CreateEmployeeDTO
     public function getDepInfo()
     {
         return array_filter([
-            'branch_id'  => $this->branch_id,
+            'branch_id'      => $this->branch_id,
             'role_id'        => $this->role_id,
             'position'       => $this->position,
             'from_date'      => $this->from_date,

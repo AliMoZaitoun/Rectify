@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Http\Resources\V1\LocationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,6 +16,7 @@ class UserResource extends JsonResource
             'email'         => $this->email,
             'phone'         => $this->phone,
             'type'          => $this->type,
+            'location'      => new LocationResource($this->whenLoaded('location')),
             'created_at'    => $this->created_at->format('Y-m-d h:i A'),
             'created_from'  => $this->created_at->diffForHumans(),
             'verified_at'   => $this?->email_verified_at?->format('Y-m-d h:i A'),

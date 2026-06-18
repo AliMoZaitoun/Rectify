@@ -23,4 +23,9 @@ class Branch extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    public function employees()
+    {
+        return $this->hasMany(EmployeeBranch::class);
+    }
 }

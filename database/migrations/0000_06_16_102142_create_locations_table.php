@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
             $table->json('name');
-            $table->enum('type', ['country', 'city', 'district']);
+            $table->enum('type', ['country', 'governorate', 'district', 'subdistrict']);
             $table->foreignId('parent_id')->nullable()->constrained('locations')->onDelete('cascade');
+            $table->string('code')->nullable()->index()->after('name');
+            $table->integer('order')->default(0)->index()->after('code');
             $table->softDeletes();
 
             $table->timestamps();

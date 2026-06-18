@@ -22,22 +22,9 @@ class EmployeeBranchDAO
 
     public function show(int $id)
     {
-        return EmployeeBranch::with(['employee', 'branch'])->find($id);
+        return EmployeeBranch::where('id', $id)->with(['employee', 'branch'])->first();
     }
 
-    public function findByEmployee(int $employeeId)
-    {
-        return EmployeeBranch::with('branch')
-            ->where('employee_id', $employeeId)
-            ->get();
-    }
-
-    public function findByBranch(int $branchId)
-    {
-        return EmployeeBranch::with('employee')
-            ->where('branch_id', $branchId)
-            ->get();
-    }
 
     public function update(int $id, UpdateEmployeeBranchDTO $dto)
     {
@@ -50,15 +37,5 @@ class EmployeeBranchDAO
     {
         $record = $this->show($id);
         return $record->delete();
-    }
-
-    public function destroyByEmployee(int $employeeId)
-    {
-        return EmployeeBranch::where('employee_id', $employeeId)->delete();
-    }
-
-    public function destroyByBranch(int $branchId)
-    {
-        return EmployeeBranch::where('branch_id', $branchId)->delete();
     }
 }

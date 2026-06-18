@@ -6,7 +6,7 @@ use App\Http\Resources\V1\EmployeeDetailResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DepartmentResource extends JsonResource
+class BranchResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -16,7 +16,7 @@ class DepartmentResource extends JsonResource
             'description'   => $this->description,
             'created_at'    => $this->created_at->format('Y-m-d h:i A'),
 
-            'employees'     => EmployeeDepartmentResource::collection($this->whenLoaded('employees'))
+            'employees'     => EmployeeBranchResource::collection($this->whenLoaded('employees'))
         ];
     }
 }

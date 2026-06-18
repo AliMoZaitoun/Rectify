@@ -35,6 +35,7 @@ class BranchService
                 $data['description'] = $this->translationService->translateAll($dto->description);
             }
 
+
             return $this->branchDAO->store($data);
         });
     }
@@ -44,9 +45,16 @@ class BranchService
         return $this->branchDAO->show($id);
     }
 
-    public function update(int $id, UpdateBranchDTO $BranchDTO)
+    public function update(int $id, UpdateBranchDTO $dto)
     {
-        return $this->branchDAO->update($id, $BranchDTO);
+        $data = $dto->toArray();
+        if ($data['name'])
+            $data['name'] = $this->translationService->translateAll($dto->name);
+
+        if ($data['description']) {
+            $data['description'] = $this->translationService->translateAll($dto->description);
+        }
+        return $this->branchDAO->update($id, $data);
     }
 
     public function destroy(int $id)

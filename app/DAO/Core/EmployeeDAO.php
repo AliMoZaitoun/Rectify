@@ -12,7 +12,7 @@ class EmployeeDAO
 
     public function index()
     {
-        return Employee::all();
+        return Employee::with(['branches'])->get();
     }
 
     public function store(CreateEmployeeDTO $employeeDTO)
@@ -24,7 +24,7 @@ class EmployeeDAO
 
     public function show(int $id)
     {
-        return Employee::find($id) ?? throw new NotFoundException("Employee");
+        return Employee::where('id', $id)->with(['branches'])->first();
     }
 
     public function update(int $id, UpdateEmployeeDTO $employeeDTO)

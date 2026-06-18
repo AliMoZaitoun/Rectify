@@ -65,7 +65,7 @@ class EmployeeService
     public function show(int $id)
     {
         $employee = $this->employeeDAO->show($id);
-        return $employee->user;
+        return $employee;
     }
 
     public function update(int $id, UpdateUserDTO $userDTO, UpdateEmployeeDTO $employeeDTO)

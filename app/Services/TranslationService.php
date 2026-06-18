@@ -18,6 +18,7 @@ class TranslationService
     {
         $modelName = 'gemini-2.5-flash';
 
+        return ['ar' => $text];
         $result = $this->client
             ->generativeModel($modelName)
             ->generateContent($this->buildPrompt($text));
@@ -30,7 +31,7 @@ class TranslationService
     {
         $targetLanguages = ['ar', 'en'];
 
-        $prompt = "You are an expert real estate and architecture translator. 
+        $prompt = "You are an expert translator. 
                    Translate the following text into these languages: " . implode(', ', $targetLanguages) . ". 
                    Respond ONLY with a valid JSON object where keys are the language codes and values are the translations.
                    Do not include any markdown formatting or markdown code blocks (like ```json).

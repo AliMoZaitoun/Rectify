@@ -4,7 +4,6 @@ namespace App\DAO;
 
 use App\DTOs\User\Update\UpdateUserDTO;
 use App\DTOs\User\Create\CreateUserDTO;
-use App\Exceptions\NotFoundException;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +21,7 @@ class UserDAO
 
     public function findByField(string $type, string $value)
     {
-        return User::where($type, $value)->first();
+        return User::where($type, $value)->with('location')->first();
     }
 
     public function update(int $id, UpdateUserDTO $userDTO)

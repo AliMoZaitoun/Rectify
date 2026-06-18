@@ -1,0 +1,426 @@
+[
+    {
+        "name": { "ar": "سوريا", "en": "Syria" },
+        "type": "country",
+        "code": "SY",
+        "order": 1,
+        "children": [
+            {
+                "name": { "ar": "دمشق", "en": "Damascus" },
+                "type": "governorate",
+                "code": "1",
+                "order": 1,
+                "children": [
+                    {
+                        "name": { "ar": "دمشق", "en": "Damascus" },
+                        "type": "district",
+                        "code": "1-1",
+                        "order": 1,
+                        "children": [
+                            {
+                                "name": { "ar": "المزة", "en": "Al-Mazza" },
+                                "type": "subdistrict",
+                                "code": "1-1-1",
+                                "order": 1
+                            },
+                            {
+                                "name": { "ar": "كفرسوسة", "en": "Kafr Sousa" },
+                                "type": "subdistrict",
+                                "code": "1-1-2",
+                                "order": 2
+                            },
+                            {
+                                "name": {
+                                    "ar": "مشروع دمر",
+                                    "en": "Project Dummar"
+                                },
+                                "type": "subdistrict",
+                                "code": "1-1-3",
+                                "order": 3
+                            },
+                            {
+                                "name": { "ar": "برزة", "en": "Barzeh" },
+                                "type": "subdistrict",
+                                "code": "1-1-4",
+                                "order": 4
+                            },
+                            {
+                                "name": { "ar": "القابون", "en": "Al-Qaboun" },
+                                "type": "subdistrict",
+                                "code": "1-1-5",
+                                "order": 5
+                            },
+                            {
+                                "name": { "ar": "المالكي", "en": "Al-Maliki" },
+                                "type": "subdistrict",
+                                "code": "1-1-6",
+                                "order": 6
+                            },
+                            {
+                                "name": {
+                                    "ar": "المهاجرين",
+                                    "en": "Al-Muhajirin"
+                                },
+                                "type": "subdistrict",
+                                "code": "1-1-7",
+                                "order": 7
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "ريف دمشق", "en": "Rif Dimashq" },
+                "type": "governorate",
+                "code": "2",
+                "order": 2,
+                "children": [
+                    {
+                        "name": { "ar": "دوما", "en": "Douma" },
+                        "type": "district",
+                        "code": "2-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "داريا", "en": "Darayya" },
+                        "type": "district",
+                        "code": "2-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "النبك", "en": "Al-Nabk" },
+                        "type": "district",
+                        "code": "2-3",
+                        "order": 3
+                    },
+                    {
+                        "name": { "ar": "قطنا", "en": "Qatana" },
+                        "type": "district",
+                        "code": "2-4",
+                        "order": 4
+                    },
+                    {
+                        "name": { "ar": "التل", "en": "Al-Tall" },
+                        "type": "district",
+                        "code": "2-5",
+                        "order": 5
+                    },
+                    {
+                        "name": { "ar": "يبرود", "en": "Yabroud" },
+                        "type": "district",
+                        "code": "2-6",
+                        "order": 6
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "حلب", "en": "Aleppo" },
+                "type": "governorate",
+                "code": "3",
+                "order": 3,
+                "children": [
+                    {
+                        "name": { "ar": "حلب", "en": "Aleppo" },
+                        "type": "district",
+                        "code": "3-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "عفرين", "en": "Afrin" },
+                        "type": "district",
+                        "code": "3-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "منبج", "en": "Manbij" },
+                        "type": "district",
+                        "code": "3-3",
+                        "order": 3
+                    },
+                    {
+                        "name": { "ar": "السفيرة", "en": "Al-Safira" },
+                        "type": "district",
+                        "code": "3-4",
+                        "order": 4
+                    },
+                    {
+                        "name": { "ar": "جرابلس", "en": "Jarabulus" },
+                        "type": "district",
+                        "code": "3-5",
+                        "order": 5
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "حمص", "en": "Homs" },
+                "type": "governorate",
+                "code": "4",
+                "order": 4,
+                "children": [
+                    {
+                        "name": { "ar": "حمص", "en": "Homs" },
+                        "type": "district",
+                        "code": "4-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "الرستن", "en": "Ar-Rastan" },
+                        "type": "district",
+                        "code": "4-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "القصير", "en": "Al-Qusayr" },
+                        "type": "district",
+                        "code": "4-3",
+                        "order": 3
+                    },
+                    {
+                        "name": { "ar": "تدمر", "en": "Tadmur" },
+                        "type": "district",
+                        "code": "4-4",
+                        "order": 4
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "حماة", "en": "Hama" },
+                "type": "governorate",
+                "code": "5",
+                "order": 5,
+                "children": [
+                    {
+                        "name": { "ar": "حماة", "en": "Hama" },
+                        "type": "district",
+                        "code": "5-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "مصياف", "en": "Masyaf" },
+                        "type": "district",
+                        "code": "5-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "سلمية", "en": "Salamiyah" },
+                        "type": "district",
+                        "code": "5-3",
+                        "order": 3
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "اللاذقية", "en": "Latakia" },
+                "type": "governorate",
+                "code": "6",
+                "order": 6,
+                "children": [
+                    {
+                        "name": { "ar": "اللاذقية", "en": "Latakia" },
+                        "type": "district",
+                        "code": "6-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "جبلة", "en": "Jableh" },
+                        "type": "district",
+                        "code": "6-2",
+                        "order": 2
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "طرطوس", "en": "Tartous" },
+                "type": "governorate",
+                "code": "7",
+                "order": 7,
+                "children": [
+                    {
+                        "name": { "ar": "طرطوس", "en": "Tartous" },
+                        "type": "district",
+                        "code": "7-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "بانياس", "en": "Baniyas" },
+                        "type": "district",
+                        "code": "7-2",
+                        "order": 2
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "إدلب", "en": "Idlib" },
+                "type": "governorate",
+                "code": "8",
+                "order": 8,
+                "children": [
+                    {
+                        "name": { "ar": "إدلب", "en": "Idlib" },
+                        "type": "district",
+                        "code": "8-1",
+                        "order": 1
+                    },
+                    {
+                        "name": {
+                            "ar": "معرة النعمان",
+                            "en": "Ma'arrat al-Numan"
+                        },
+                        "type": "district",
+                        "code": "8-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "جسر الشغور", "en": "Jisr al-Shughur" },
+                        "type": "district",
+                        "code": "8-3",
+                        "order": 3
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "الرقة", "en": "Raqqa" },
+                "type": "governorate",
+                "code": "9",
+                "order": 9,
+                "children": [
+                    {
+                        "name": { "ar": "الرقة", "en": "Raqqa" },
+                        "type": "district",
+                        "code": "9-1",
+                        "order": 1
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "دير الزور", "en": "Deir ez-Zor" },
+                "type": "governorate",
+                "code": "10",
+                "order": 10,
+                "children": [
+                    {
+                        "name": { "ar": "دير الزور", "en": "Deir ez-Zor" },
+                        "type": "district",
+                        "code": "10-1",
+                        "order": 1
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "الحسكة", "en": "Al-Hasakah" },
+                "type": "governorate",
+                "code": "11",
+                "order": 11,
+                "children": [
+                    {
+                        "name": { "ar": "الحسكة", "en": "Al-Hasakah" },
+                        "type": "district",
+                        "code": "11-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "القامشلي", "en": "Qamishli" },
+                        "type": "district",
+                        "code": "11-2",
+                        "order": 2
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "درعا", "en": "Daraa" },
+                "type": "governorate",
+                "code": "12",
+                "order": 12,
+                "children": [
+                    {
+                        "name": { "ar": "إزرع", "en": "Izra" },
+                        "type": "district",
+                        "code": "12-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "الصنمين", "en": "Al-Sanamayn" },
+                        "type": "district",
+                        "code": "12-2",
+                        "order": 2
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "السويداء", "en": "As-Suwayda" },
+                "type": "governorate",
+                "code": "13",
+                "order": 13,
+                "children": [
+                    {
+                        "name": { "ar": "صلخد", "en": "Salkhad" },
+                        "type": "district",
+                        "code": "13-1",
+                        "order": 1
+                    },
+                    {
+                        "name": { "ar": "شهبا", "en": "Shahba" },
+                        "type": "district",
+                        "code": "13-2",
+                        "order": 2
+                    }
+                ]
+            },
+            {
+                "name": { "ar": "القنيطرة", "en": "Quneitra" },
+                "type": "governorate",
+                "code": "14",
+                "order": 14,
+                "children": [
+                    {
+                        "name": { "ar": "خان أرنبة", "en": "Khan Arnaba" },
+                        "type": "district",
+                        "code": "14-1",
+                        "order": 1,
+                        "children": []
+                    },
+                    {
+                        "name": {
+                            "ar": "نبع الصخر",
+                            "en": "Nab' al-Sakhr"
+                        },
+                        "type": "subdistrict",
+                        "code": "14-2",
+                        "order": 2
+                    },
+                    {
+                        "name": { "ar": "الكوم", "en": "Al-Koum" },
+                        "type": "subdistrict",
+                        "code": "14-3",
+                        "order": 3
+                    },
+                    {
+                        "name": {
+                            "ar": "الحميدية",
+                            "en": "Al-Hamidiyah"
+                        },
+                        "type": "subdistrict",
+                        "code": "14-4",
+                        "order": 4
+                    },
+                    {
+                        "name": {
+                            "ar": "القحطانية",
+                            "en": "Al-Qahtaniyah"
+                        },
+                        "type": "subdistrict",
+                        "code": "14-5",
+                        "order": 5
+                    },
+                    {
+                        "name": { "ar": "فيق", "en": "Fiq" },
+                        "type": "district",
+                        "code": "14-6",
+                        "order": 2,
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

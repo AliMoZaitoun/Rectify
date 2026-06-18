@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Hash;
 class CreateUserDTO
 {
     public function __construct(
-        public ?int $id,
         public string $firstName,
         public string $lastName,
+        public string $location_id,
         public string $phone,
         public string $email,
         public string $gender,
@@ -20,9 +20,9 @@ class CreateUserDTO
     public static function fromRequest(array $request, string $type): self
     {
         return new self(
-            id: null,
             firstName: $request['first_name'],
             lastName: $request['last_name'],
+            location_id: $request['location_id'],
             phone: $request['phone'],
             email: $request['email'],
             gender: $request['gender'],
@@ -34,13 +34,14 @@ class CreateUserDTO
     public function toArray(): array
     {
         return [
-            'first_name' => $this->firstName,
-            'last_name'  => $this->lastName,
-            'email'      => $this->email,
-            'phone'      => $this->phone,
-            'gender'     => $this->gender,
-            'type'       => $this->type,
-            'password'   => Hash::make($this->password),
+            'first_name'    => $this->firstName,
+            'last_name'     => $this->lastName,
+            'email'         => $this->email,
+            'location_id'   => $this->location_id,
+            'phone'         => $this->phone,
+            'gender'        => $this->gender,
+            'type'          => $this->type,
+            'password'      => Hash::make($this->password),
         ];
     }
 }

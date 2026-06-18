@@ -15,12 +15,13 @@ class SignUpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'gender' => ['required', 'string', 'in:male,female'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'first_name'    => ['required', 'string', 'max:255'],
+            'last_name'     => ['required', 'string', 'max:255'],
+            'phone'         => ['required', 'string', 'max:20'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'gender'        => ['required', 'string', 'in:male,female'],
+            'password'      => ['required', 'string', 'min:8', 'confirmed'],
+            'location_id'   => ['required', 'integer', 'exists:locations,id'],
         ];
     }
 }

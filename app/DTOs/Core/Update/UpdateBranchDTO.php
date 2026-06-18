@@ -7,6 +7,7 @@ class UpdateBranchDTO
     public function __construct(
         public ?string $name,
         public ?string $description,
+        public ?int $location_id
     ) {}
 
     public static function fromRequest(array $request): self
@@ -14,6 +15,7 @@ class UpdateBranchDTO
         return new self(
             name: $request['name'] ?? null,
             description: $request['description'] ?? null,
+            location_id: $request['location_id'] ?? null,
         );
     }
 
@@ -22,6 +24,7 @@ class UpdateBranchDTO
         return array_filter([
             'name'           => $this->name,
             'description'    => $this->description,
+            'location_id'    => $this->location_id,
         ], fn($value) => !is_null($value));
     }
 }
