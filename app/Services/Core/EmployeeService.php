@@ -81,7 +81,6 @@ class EmployeeService
 
     public function destroy(int $id)
     {
-        $this->employeeBranchDAO->destroyByEmployee($id);
         return $this->employeeDAO->destroy($id);
     }
 }

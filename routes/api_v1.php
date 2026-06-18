@@ -8,6 +8,7 @@ use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
+use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
 
 Route::post('verifyEmail', [VerificationController::class, 'verifyEmail']);
@@ -52,3 +53,6 @@ Route::prefix('employee')->group(function () {
     Route::put('/{id}', [EmployeeController::class, 'update']);
     Route::delete('/{id}', [EmployeeController::class, 'destroy']);
 });
+
+
+Route::get('location', [LocationController::class, 'index']);

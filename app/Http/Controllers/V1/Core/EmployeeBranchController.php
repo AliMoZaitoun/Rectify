@@ -38,18 +38,6 @@ class EmployeeBranchController extends Controller
         return $this->useResource($emp_dep, EmployeeBranchResource::class);
     }
 
-    public function findByEmployee(int $employeeId)
-    {
-        $Branchs = $this->employeeBranchService->findByEmployee($employeeId);
-        return $this->successCollection($Branchs, EmployeeBranchResource::class);
-    }
-
-    public function findByBranch(int $BranchId)
-    {
-        $employees = $this->employeeBranchService->findByBranch($BranchId);
-        return $this->successCollection($employees, EmployeeBranchResource::class);
-    }
-
     public function update(int $id, Request $request)
     {
         $dto = UpdateEmployeeBranchDTO::fromRequest($request->all());
@@ -60,18 +48,6 @@ class EmployeeBranchController extends Controller
     public function destroy(int $id)
     {
         $this->employeeBranchService->destroy($id);
-        return $this->successResponse([], __('messages.common.deleted'));
-    }
-
-    public function destroyByEmployee(int $employeeId)
-    {
-        $this->employeeBranchService->destroyByEmployee($employeeId);
-        return $this->successResponse([], __('messages.common.deleted'));
-    }
-
-    public function destroyByBranch(int $BranchId)
-    {
-        $this->employeeBranchService->destroyByBranch($BranchId);
         return $this->successResponse([], __('messages.common.deleted'));
     }
 }

@@ -35,5 +35,4 @@ php artisan view:cache
 # Run migrations
 php artisan migrate --force || echo "Migrations skipped (already up to date or error)"
 
-echo "Starting PHP-FPM..."
-exec php-fpm
+php artisan serve --host=0.0.0.0 --port=$PORT
