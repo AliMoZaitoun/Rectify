@@ -10,6 +10,7 @@ use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::post('verifyEmail', [VerificationController::class, 'verifyEmail']);
 Route::post('login', [LoginController::class, 'login']);
@@ -56,3 +57,11 @@ Route::prefix('employee')->group(function () {
 
 
 Route::get('location', [LocationController::class, 'index']);
+
+Route::get('/run-seeder', function () {
+    Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
+    return 'Database has been refreshed and seeded!';
+});
