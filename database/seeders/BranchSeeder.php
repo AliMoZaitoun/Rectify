@@ -1,0 +1,59 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Core\Branch;
+use App\Models\Location;
+use Illuminate\Database\Seeder;
+
+class BranchSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // جلب معرفات بعض المناطق الحقيقية من السيدر السابق (مثلاً المزة، كفرسوسة، المالكي)
+        $locations = Location::where('type', 'subdistrict')->pluck('id')->toArray();
+        $defaultLocationId = $locations[0] ?? Location::first()?->id ?? 1;
+
+        $branches = [
+            [
+                'name' => ['ar' => 'المطعم الرئيسي', 'en' => 'Main Restaurant'],
+                'description' => ['ar' => 'قسم وجبات الطعام والأطباق الرئيسية', 'en' => 'Main dining and dish menu section'],
+                'location_id' => $locations[0] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'الكافيه والقهوة المختصة', 'en' => 'Specialty Cafe'],
+                'description' => ['ar' => 'قسم المشروبات الساخنة، الباردة والحلويات', 'en' => 'Hot & cold beverages and desserts section'],
+                'location_id' => $locations[1] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'غرف ألعاب الفوز (VR & Virtual)', 'en' => 'Victory Game Rooms'],
+                'description' => ['ar' => 'غرف المحاكاة وألعاب الواقع الافتراضي', 'en' => 'Virtual reality and simulator game rooms'],
+                'location_id' => $locations[2] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'أكشاك الطعام السريع', 'en' => 'Food Kiosks'],
+                'description' => ['ar' => 'أكشاك المأكولات الخفيفة والسريعة بالمساحات المفتوحة', 'en' => 'Express snacks and fast food booths'],
+                'location_id' => $locations[3] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'صالة البلياردو والسنوكر', 'en' => 'Billiards & Snooker Hall'],
+                'description' => ['ar' => 'صالة طاولات البلياردو والتحديات', 'en' => 'Billiards and snooker tournament area'],
+                'location_id' => $locations[0] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'صالة البلايستيشن والـ Gaming', 'en' => 'PlayStation & Gaming Zone'],
+                'description' => ['ar' => 'شاشات العرض الحديثة وأحدث أجهزة الألعاب', 'en' => 'High-end gaming zone with latest consoles'],
+                'location_id' => $locations[1] ?? $defaultLocationId,
+            ],
+            [
+                'name' => ['ar' => 'منطقة ألعاب الأطفال (Kids Zone)', 'en' => 'Kids Play Zone'],
+                'description' => ['ar' => 'منطقة الألعاب الآمنة والمجسمات الترفيهية للأطفال', 'en' => 'Safe play area and fun activities for kids'],
+                'location_id' => $locations[2] ?? $defaultLocationId,
+            ],
+        ];
+
+        foreach ($branches as $branch) {
+            Branch::create($branch);
+        }
+    }
+}

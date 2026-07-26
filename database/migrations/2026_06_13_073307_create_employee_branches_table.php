@@ -20,6 +20,11 @@ return new class extends Migration
             $table->enum('position', ['manager', 'staff'])->default('staff');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index(['employee_id', 'branch_id']);
+            $table->index('position');
+
+            $table->unique(['employee_id', 'branch_id', 'from_date']);
         });
     }
 

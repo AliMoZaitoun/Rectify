@@ -7,6 +7,7 @@ use App\DAO\Core\EmployeeBranchDAO;
 use App\DTOs\Core\Create\AssignEmployeeBranchDTO;
 use App\DTOs\Core\Create\CreateBranchDTO;
 use App\DTOs\Core\Update\UpdateBranchDTO;
+use App\Exceptions\NotFoundException;
 use App\Services\FileManagerService;
 use App\Services\Transaction;
 use App\Services\TranslationService;
@@ -42,7 +43,11 @@ class BranchService
 
     public function show(int $id)
     {
-        return $this->branchDAO->show($id);
+        $branch = $this->branchDAO->show($id);
+        if (!$branch) {
+            throw new NotFoundException("Branch");
+        }
+        return $branch;
     }
 
     public function update(int $id, UpdateBranchDTO $dto)
@@ -59,7 +64,7 @@ class BranchService
 
     public function destroy(int $id)
     {
-        $this->employeebranchDAO->destroyByBranch($id);
+        // $this->employeebranchDAO->destroyByBranch($id);
         return $this->branchDAO->destroy($id);
     }
 

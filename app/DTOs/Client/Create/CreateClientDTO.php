@@ -17,7 +17,7 @@ class CreateClientDTO
         return new self(
             id: null,
             user_id: null,
-            points: $request['points'] ?? null
+            points: $request['points'] ?? 0
         );
     }
 

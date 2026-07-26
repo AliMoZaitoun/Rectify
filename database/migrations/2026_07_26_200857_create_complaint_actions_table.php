@@ -8,20 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
+        Schema::create('complaint_actions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-
-            $table->integer('points')->default(0);
+            $table->foreignId('complaint_id')->constrained()->cascadeOnDelete();
+            $table->nullableMorphs('actor');
+            $table->string('action_type');
+            $table->text('content');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('complaint_actions');
     }
 };

@@ -1,17 +1,22 @@
 <?php
 
-namespace App\Models\Core;
+namespace App\Models\Complaint;
 
-use App\Models\Location;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'description', 'location_id'])]
-class Branch extends Model
+#[Fillable([
+    'name',
+    'description',
+    'sla_hours',
+])]
+class Category extends Model
 {
     use SoftDeletes, HasTranslations;
+    public $translatable = ['name', 'description'];
+
     protected function casts(): array
     {
         return [
@@ -20,13 +25,8 @@ class Branch extends Model
         ];
     }
 
-    public function location()
+    public function complaints()
     {
-        return $this->belongsTo(Location::class);
-    }
-
-    public function employees()
-    {
-        return $this->hasMany(EmployeeBranch::class);
+        return $this->hasMany(Complaint::class);
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('phone')->unique();
-            $table->foreignId('location_id')->constrained()->onDelete('restrict');
+            $table->foreignId('location_id')->nullable()->constrained()->onDelete('restrict');
             $table->enum('type', ['admin', 'employee', 'client']);
             $table->enum('gender', ['male', 'female']);
             $table->timestamp('email_verified_at')->nullable();

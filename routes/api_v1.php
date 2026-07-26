@@ -6,36 +6,57 @@ use App\Http\Controllers\V1\Auth\PasswordManagementController;
 use App\Http\Controllers\V1\Auth\VerificationController;
 use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
+use App\Http\Controllers\V1\Complaint\CategoryController;
+use App\Http\Controllers\V1\Complaint\ComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
 use Illuminate\Support\Facades\Artisan;
 
+/*
+|--------------------------------------------------------------------------
+| Authentication & Password Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::post('verifyEmail', [VerificationController::class, 'verifyEmail']);
 Route::post('login', [LoginController::class, 'login']);
-Route::post('changePassword', [PasswordManagementController::class, 'changePassword'])->middleware('auth:sanctum');
-Route::post('refreshToken', [LoginController::class, 'refreshToken'])->middleware('auth:sanctum');
 Route::post('forgotPassword', [PasswordManagementController::class, 'forgotPassword']);
 Route::post('resetPassword', [PasswordManagementController::class, 'resetPassword']);
-Route::post('logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
-
-
-// OTP
 Route::post('resendCode', [OtpController::class, 'resendCode']);
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('changePassword', [PasswordManagementController::class, 'changePassword']);
+    Route::post('refreshToken', [LoginController::class, 'refreshToken']);
+    Route::post('logout', [LoginController::class, 'logout']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Client Management Routes
+|--------------------------------------------------------------------------
+*/
 Route::prefix('client')->group(function () {
     Route::get('', [ClientController::class, 'index']);
     Route::post('', [ClientController::class, 'store']);
     Route::put('', [ClientController::class, 'update']);
     Route::delete('{id}', [ClientController::class, 'destroy']);
-
-
     Route::get('profile', [ClientController::class, 'profile']);
+
+    // Client Branch read routes
+    Route::get('branch', [BranchController::class, 'readForClient']);
+    Route::get('branch/{id}', [BranchController::class, 'showForClient']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Core System Routes (Branches, Employees)
+|--------------------------------------------------------------------------
+*/
 Route::prefix('branch')->group(function () {
     Route::get('', [BranchController::class, 'index']);
+    Route::get('{id}', [BranchController::class, 'show']);
     Route::post('', [BranchController::class, 'store']);
     Route::put('/{id}', [BranchController::class, 'update']);
     Route::delete('/{id}', [BranchController::class, 'destroy']);
@@ -55,7 +76,54 @@ Route::prefix('employee')->group(function () {
     Route::delete('/{id}', [EmployeeController::class, 'destroy']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Categories Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('category')->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::get('/{id}', [CategoryController::class, 'show']);
 
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::post('/', [CategoryController::class, 'store']);
+        Route::put('/{id}', [CategoryController::class, 'update']);
+        Route::delete('/{id}', [CategoryController::class, 'destroy']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Complaints Routes (Public & Dynamic Lifecycle)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('complaint')->group(function () {
+
+    Route::post('/', [ComplaintController::class, 'store']);
+
+    Route::get('/track/{token}', [ComplaintController::class, 'track']);
+    Route::post('/track/{token}/reply', [ComplaintController::class, 'clientReply']);
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/my-complaints', [ComplaintController::class, 'myComplaints']);
+    });
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/', [ComplaintController::class, 'index']);
+        Route::get('/branch/{branchId}', [ComplaintController::class, 'branchComplaints']);
+        Route::get('/{id}', [ComplaintController::class, 'show']);
+
+        Route::put('/{id}/status', [ComplaintController::class, 'changeStatus']);
+
+        Route::post('/{id}/actions', [ComplaintController::class, 'employeeAction']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| System & Helpers
+|--------------------------------------------------------------------------
+*/
 Route::get('location', [LocationController::class, 'index']);
 
 Route::get('/run-seeder', function () {

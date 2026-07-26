@@ -18,13 +18,14 @@ class TranslationService
     {
         $modelName = 'gemini-2.5-flash';
 
-        return ['ar' => $text];
         $result = $this->client
             ->generativeModel($modelName)
             ->generateContent($this->buildPrompt($text));
 
         $aiText = $result->text();
-        return json_decode($aiText, true) ?? ['ar' => $text];
+        $cleanJson = preg_replace('/^```json\s*|\s*```$/i', '', trim($aiText));
+
+        return json_decode($cleanJson, true) ?? ['ar' => $text];
     }
 
     private function buildPrompt(string $text): string

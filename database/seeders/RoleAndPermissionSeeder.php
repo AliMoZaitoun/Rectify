@@ -15,8 +15,10 @@ class RoleAndPermissionSeeder extends Seeder
             'client',
             'employee',
             'branch',
-            'complaint',
 
+            'complaint',
+            'category',
+            'location'
         ];
 
         $actions = ['read', 'create', 'update', 'archive', 'restore', 'delete'];

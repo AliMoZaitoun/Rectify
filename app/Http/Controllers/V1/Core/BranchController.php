@@ -7,6 +7,7 @@ use App\DTOs\Core\Update\UpdateBranchDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Core\CreateBranchRequest;
 use App\Http\Resources\V1\Core\BranchResource;
+use App\Http\Resources\V1\Core\BranchResourceForClient;
 use App\Services\Core\BranchService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -25,6 +26,12 @@ class BranchController extends Controller
         return $this->successCollection($items, BranchResource::class);
     }
 
+    public function readForClient()
+    {
+        $items = $this->BranchService->index();
+        return $this->successCollection($items, BranchResourceForClient::class);
+    }
+
     public function store(CreateBranchRequest $request)
     {
         $BranchDTO = CreateBranchDTO::fromRequest($request->validated());
@@ -37,6 +44,12 @@ class BranchController extends Controller
     {
         $item = $this->BranchService->show($id);
         return $this->useResource($item, BranchResource::class);
+    }
+
+    public function showForClient(int $id)
+    {
+        $item = $this->BranchService->show($id);
+        return $this->useResource($item, BranchResourceForClient::class);
     }
 
     public function update(int $id, Request $request)
