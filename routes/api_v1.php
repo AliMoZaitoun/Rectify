@@ -105,6 +105,8 @@ Route::prefix('complaint')->group(function () {
     Route::get('/my-complaints', [AppComplaintController::class, 'myComplaints']);
 
     Route::post('/track/{code}/reply', [AppComplaintController::class, 'clientReply']);
+
+    Route::post('/track/{code}', [AppComplaintController::class, 'track']);
 });
 
 /*

@@ -42,7 +42,7 @@ class AppComplaintController extends Controller
         return $this->successCollection($complaints, AppComplaintResource::class);
     }
 
-    public function trackByCode(string $code)
+    public function track(string $code)
     {
         $complaint = $this->service->trackByCode($code, ['branch', 'category', 'media', 'actions', 'compensation']);
 
