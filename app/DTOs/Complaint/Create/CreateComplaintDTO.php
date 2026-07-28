@@ -6,6 +6,7 @@ class CreateComplaintDTO
 {
     public function __construct(
         public ?int $clientId,
+        public ?string $device_id,
         public int $branchId,
         public int $categoryId,
         public string $title,
@@ -18,6 +19,7 @@ class CreateComplaintDTO
     {
         return new self(
             clientId: $clientId,
+            device_id: $request->validated('device_id'),
             branchId: $request->validated('branch_id'),
             categoryId: $request->validated('category_id'),
             title: $request->validated('title'),

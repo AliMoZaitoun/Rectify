@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('tracking_code')->nullable()->unique();
-            $table->uuid('tracking_token')->unique()->after('tracking_code');
+
+            $table->string('device_id')->nullable()->index();
             $table->boolean('is_anonymous')->default(false);
+
+            $table->string('tracking_code')->nullable()->unique();
 
             $table->foreignId('branch_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('restrict');
@@ -27,6 +29,7 @@ return new class extends Migration
 
             $table->string('status')->default('pending');
             $table->string('priority')->default('medium');
+
 
             $table->foreignId('parent_id')->nullable()->constrained('complaints')->onDelete('cascade');
 

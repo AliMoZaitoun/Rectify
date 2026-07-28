@@ -7,9 +7,11 @@ use App\Http\Controllers\V1\Auth\VerificationController;
 use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
 use App\Http\Controllers\V1\Complaint\CategoryController;
-use App\Http\Controllers\V1\Complaint\ComplaintController;
+use App\Http\Controllers\V1\Complaint\AppComplaintController;
+use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
+use App\Http\Controllers\V1\Dashboard\CompensationController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
 use Illuminate\Support\Facades\Artisan;
@@ -57,9 +59,9 @@ Route::prefix('client')->group(function () {
 Route::prefix('branch')->group(function () {
     Route::get('', [BranchController::class, 'index']);
     Route::get('{id}', [BranchController::class, 'show']);
-    Route::post('', [BranchController::class, 'store']);
-    Route::put('/{id}', [BranchController::class, 'update']);
-    Route::delete('/{id}', [BranchController::class, 'destroy']);
+    Route::post('', [BranchController::class, 'store'])->middleware(['auth:sanctum', 'permission:create.branch']);
+    Route::put('/{id}', [BranchController::class, 'update'])->middleware(['auth:sanctum', 'permission:update.branch']);
+    Route::delete('/{id}', [BranchController::class, 'destroy'])->middleware(['auth:sanctum', 'permission:delete.branch']);
 });
 
 Route::prefix('employee-branch')->group(function () {
@@ -94,29 +96,36 @@ Route::prefix('category')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Complaints Routes (Public & Dynamic Lifecycle)
+| App / Client Complaints Routes
 |--------------------------------------------------------------------------
 */
 Route::prefix('complaint')->group(function () {
+    Route::post('/', [AppComplaintController::class, 'store']);
 
-    Route::post('/', [ComplaintController::class, 'store']);
+    Route::get('/my-complaints', [AppComplaintController::class, 'myComplaints']);
 
-    Route::get('/track/{token}', [ComplaintController::class, 'track']);
-    Route::post('/track/{token}/reply', [ComplaintController::class, 'clientReply']);
+    Route::post('/track/{code}/reply', [AppComplaintController::class, 'clientReply']);
+});
 
-    Route::middleware(['auth:sanctum'])->group(function () {
-        Route::get('/my-complaints', [ComplaintController::class, 'myComplaints']);
-    });
+/*
+|--------------------------------------------------------------------------
+| Dashboard / Employee Complaints Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [DashboardComplaintController::class, 'index']);
+    Route::get('/branch/{branchId}', [DashboardComplaintController::class, 'branchComplaints']);
+    Route::get('/{id}', [DashboardComplaintController::class, 'show']);
 
-    Route::middleware(['auth:sanctum'])->group(function () {
-        Route::get('/', [ComplaintController::class, 'index']);
-        Route::get('/branch/{branchId}', [ComplaintController::class, 'branchComplaints']);
-        Route::get('/{id}', [ComplaintController::class, 'show']);
+    Route::put('/{id}/status', [DashboardComplaintController::class, 'changeStatus']);
+    Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
+});
 
-        Route::put('/{id}/status', [ComplaintController::class, 'changeStatus']);
-
-        Route::post('/{id}/actions', [ComplaintController::class, 'employeeAction']);
-    });
+Route::prefix('dashboard/compensations')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [CompensationController::class, 'index']);
+    Route::post('/complaint/{complaintId}', [CompensationController::class, 'store']);
+    Route::get('/complaint/{complaintId}', [CompensationController::class, 'showByComplaint']);
+    Route::put('/{id}/status', [CompensationController::class, 'updateStatus']);
 });
 
 /*

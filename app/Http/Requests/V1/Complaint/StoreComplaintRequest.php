@@ -15,6 +15,7 @@ class StoreComplaintRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'device_id'     => ['required', 'string'],
             'branch_id'     => ['required', 'integer', 'exists:branches,id'],
             'category_id'   => ['required', 'integer', 'exists:categories,id'],
             'title'         => ['required', 'string', 'max:255'],

@@ -35,15 +35,17 @@ class ComplaintDAO
             ->first();
     }
 
-    public function byTrackingToken(string $token, array $relations = []): ?Complaint
-    {
-        return Complaint::with($relations)->where('tracking_token', $token)->first();
-    }
 
-    public function byClient(int $clientId, int $perPage = 15): LengthAwarePaginator
+    public function byClientOrDevice(?int $clientId, ?string $deviceId, int $perPage = 15): LengthAwarePaginator
     {
         return Complaint::with(['branch', 'category'])
-            ->where('client_id', $clientId)
+            ->when($clientId, function ($query) use ($clientId) {
+                $query->where('client_id', $clientId);
+            })
+            ->when(!$clientId && $deviceId, function ($query) use ($deviceId) {
+                $query->where('device_id', $deviceId)
+                    ->whereNull('client_id');
+            })
             ->latest()
             ->paginate($perPage);
     }

@@ -37,4 +37,9 @@ class ClientDAO
         $client = $this->show($id);
         return $client->user->delete();
     }
+
+    public function incrementPoints(int $clientId, int $points): bool
+    {
+        return (bool) Client::where('id', $clientId)->increment('points', $points);
+    }
 }

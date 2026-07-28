@@ -12,6 +12,8 @@ use Spatie\Translatable\HasTranslations;
 class Branch extends Model
 {
     use SoftDeletes, HasTranslations;
+
+    public $translatable = ['name', 'description'];
     protected function casts(): array
     {
         return [

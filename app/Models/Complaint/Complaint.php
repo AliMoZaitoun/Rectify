@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'client_id',
+    'device_id',
     'tracking_code',
-    'tracking_token',
     'is_anonymous',
     'branch_id',
     'category_id',
@@ -36,6 +36,8 @@ class Complaint extends Model
         'resolved_at' => 'datetime',
         'status' => ComplaintStatus::class,
         'priority' => ComplaintPriority::class,
+        'is_anonymous' => 'boolean',
+        'is_spam' => 'boolean'
     ];
 
     public function client()
@@ -81,5 +83,10 @@ class Complaint extends Model
     public function actions()
     {
         return $this->hasMany(ComplaintAction::class)->latest();
+    }
+
+    public function compensation()
+    {
+        return $this->hasOne(ComplaintCompensation::class);
     }
 }

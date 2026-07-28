@@ -8,10 +8,11 @@ use App\Http\Resources\V1\ClientDetailResource;
 use App\Http\Resources\V1\Core\BranchResource;
 use App\Http\Resources\V1\EmployeeDetailResource;
 use App\Http\Resources\V1\MediaResource;
+use App\Http\Resources\V1\Compensation\DashboardCompensationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ComplaintResource extends JsonResource
+class DashboardComplaintResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -28,8 +29,6 @@ class ComplaintResource extends JsonResource
         return [
             'id'             => $this->id,
             'tracking_code'  => $this->tracking_code,
-            'tracking_token' => $this->tracking_token,
-            'tracking_url'   => url("/api/v1/complaint/track/{$this->tracking_token}"),
             'is_anonymous'   => (bool) $this->is_anonymous,
             'title'          => $this->title,
             'description'    => $this->description,
@@ -44,20 +43,15 @@ class ComplaintResource extends JsonResource
             'resolved_at'    => $this->resolved_at?->toIso8601String(),
             'created_at'     => $this->created_at?->toIso8601String(),
 
-            'client'      => $this->when($this->whenLoaded('client') && $this->client, function () {
+            'client' => $this->when(!$this->is_anonymous && $this->relationLoaded('client') && $this->client, function () {
                 return new ClientDetailResource($this->client);
             }),
 
             'branch'      => new BranchResource($this->whenLoaded('branch')),
-
             'category'    => new CategoryResource($this->whenLoaded('category')),
-
             'assigned_to' => new EmployeeDetailResource($this->whenLoaded('assignedTo')),
-
             'attachments' => MediaResource::collection($this->whenLoaded('media')),
-
-            'histories'   => ComplaintHistoryResource::collection($this->whenLoaded('histories')),
-
+            'histories'   => DashboardComplaintHistoryResource::collection($this->whenLoaded('histories')),
             'actions'     => ComplaintActionResource::collection($this->whenLoaded('actions')),
 
             'ai' => [
@@ -65,6 +59,9 @@ class ComplaintResource extends JsonResource
                 'suggested_category' => $this->ai_suggested_category,
                 'is_spam'             => (bool) $this->is_spam,
             ],
+
+            'compensation' => new DashboardCompensationResource($this->whenLoaded('compensation')),
+
         ];
     }
 }

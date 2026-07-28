@@ -44,7 +44,7 @@ class ComplaintService
         return $complaint;
     }
 
-    public function findByTrackingCode(string $code, array $relations = []): Complaint
+    public function trackByCode(string $code, array $relations = []): Complaint
     {
         $complaint = $this->complaintDAO->byTrackingCode($code, $relations);
         if (!$complaint) {
@@ -53,9 +53,9 @@ class ComplaintService
         return $complaint;
     }
 
-    public function clientComplaints(int $clientId, int $perPage = 15): LengthAwarePaginator
+    public function clientComplaints(?int $clientId, ?string $deviceId = null, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->complaintDAO->byClient($clientId, $perPage);
+        return $this->complaintDAO->byClientOrDevice($clientId, $deviceId, $perPage);
     }
 
     public function branchComplaints(int $branchId, array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -72,12 +72,12 @@ class ComplaintService
             $slaDueAt = now()->addHours($slaHours);
 
             $trackingCode = 'CMP-' . strtoupper(Str::random(8));
-            $trackingToken = (string) Str::uuid();
 
-            $clientId = $dto->isAnonymous ? null : $dto->clientId;
+            $clientId = $dto->clientId;
 
             $complaintData = [
                 'client_id'      => $clientId,
+                'device_id'      => $dto->device_id,
                 'branch_id'      => $dto->branchId,
                 'category_id'    => $dto->categoryId,
                 'title'          => $dto->title,
@@ -85,7 +85,6 @@ class ComplaintService
                 'priority'       => ComplaintPriority::MEDIUM->value,
                 'is_anonymous'   => $dto->isAnonymous,
                 'tracking_code'  => $trackingCode,
-                'tracking_token' => $trackingToken,
                 'sla_due_at'     => $slaDueAt,
                 'status' => ComplaintStatus::PENDING->value,
             ];
@@ -160,25 +159,6 @@ class ComplaintService
     public function updateStatus(Complaint $complaint, string $status): bool
     {
         return $this->complaintDAO->update($complaint, ['status' => $status]);
-    }
-
-    public function trackByToken(string $token): Complaint
-    {
-        $complaint = $this->complaintDAO->byTrackingToken($token, [
-            'branch',
-            'category',
-            'assignedTo',
-            'media',
-            'histories.assignedTo',
-            'actions.actor',
-            'actions.media',
-        ]);
-
-        if (!$complaint) {
-            throw new NotFoundException("Complaint");
-        }
-
-        return $complaint;
     }
 
     public function addAction(Complaint $complaint, ComplaintActionDTO $dto, array $attachments = [])

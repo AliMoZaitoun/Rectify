@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             BranchSeeder::class,
             UserAndEmployeeSeeder::class,
+            ComplaintSeeder::class
         ]);
     }
 }
