@@ -35,7 +35,7 @@ class DashboardComplaintController extends Controller
 
     public function show(int $id)
     {
-        $complaint = $this->service->findById($id, ['branch', 'category', 'client', 'media', 'actions', 'histories']);
+        $complaint = $this->service->findById($id, ['branch', 'category', 'client', 'media', 'actions', 'histories', 'compensation']);
 
         return $this->useResource($complaint, DashboardComplaintResource::class);
     }
