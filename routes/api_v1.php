@@ -42,9 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('client')->group(function () {
     Route::get('', [ClientController::class, 'index']);
     Route::post('', [ClientController::class, 'store']);
-    Route::put('', [ClientController::class, 'update']);
-    Route::delete('{id}', [ClientController::class, 'destroy']);
-    Route::get('profile', [ClientController::class, 'profile']);
+    Route::put('', [ClientController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('{id}', [ClientController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::get('profile', [ClientController::class, 'profile'])->middleware('auth:sanctum');
 
     // Client Branch read routes
     Route::get('branch', [BranchController::class, 'readForClient']);
