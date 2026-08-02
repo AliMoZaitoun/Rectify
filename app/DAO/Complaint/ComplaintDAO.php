@@ -37,7 +37,7 @@ class ComplaintDAO
 
     public function byClientOrDevice(?int $clientId, ?string $deviceId, int $perPage = 15): LengthAwarePaginator
     {
-        return Complaint::with(['branch', 'category', 'compensation'])
+        return Complaint::with(['branch', 'category', 'compensation', 'media'])
             ->when($clientId, function ($query) use ($clientId) {
                 $query->where('client_id', $clientId);
             })

@@ -84,8 +84,23 @@ class AppComplaintController extends Controller
 
         $deviceId = $request->header('X-Device-ID') ?? $request->input('device_id');
 
-        $syncedCount = $this->service->linkGuestComplaintsToClient($deviceId, $client->id);
+        $syncedCount = $this->service->linkAllGuestComplaintsToClient($deviceId, $client->id);
 
-        return $this->successResponse(['synced_count' => $syncedCount], __('messages.complaint.synced_successfully'));
+        return $this->successResponse(
+            ['synced_count' => $syncedCount],
+            __('messages.complaint.synced_successfully')
+        );
+    }
+
+    public function syncDeviceComplaint(string $code, Request $request)
+    {
+        $client = Auth::guard('sanctum')->user()?->client;
+
+        $this->service->linkSingleGuestComplaintToClient($code, $client->id);
+
+        return $this->successResponse(
+            ['tracking_code' => $code],
+            __('messages.complaint.synced_successfully')
+        );
     }
 }

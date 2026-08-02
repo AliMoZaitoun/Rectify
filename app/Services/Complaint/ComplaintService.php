@@ -221,30 +221,56 @@ class ComplaintService
         });
     }
 
-    public function linkGuestComplaintsToClient(?string $deviceId, int $clientId): int
+    public function linkAllGuestComplaintsToClient(?string $deviceId, int $clientId): int
     {
         if (empty($deviceId)) {
             throw new DeviceIdRequiredException();
         }
 
         return $this->transaction->execute(function () use ($deviceId, $clientId) {
-
             $updatedCount = $this->complaintDAO->linkComplaintsAndRevealIdentity($deviceId, $clientId);
 
             if ($updatedCount > 0) {
-                $pendingCompensations = $this->compensationDAO->getPendingPointsCompensationsByClient($clientId);
-
-                foreach ($pendingCompensations as $compensation) {
-                    $this->clientDAO->incrementPoints($clientId, (int) $compensation->amount);
-
-                    $this->compensationDAO->update($compensation, [
-                        'status'     => CompensationStatus::GRANTED->value,
-                        'granted_at' => now(),
-                    ]);
-                }
+                $this->processPendingCompensations($clientId);
             }
 
             return $updatedCount;
         });
+    }
+
+    public function linkSingleGuestComplaintToClient(string $code, int $clientId): bool
+    {
+        return $this->transaction->execute(function () use ($code, $clientId) {
+            $complaint = $this->complaintDAO->byTrackingCode($code);
+
+            if (! $complaint) {
+                throw new ComplaintNotFoundException();
+            }
+
+            $updated = $this->complaintDAO->update($complaint, [
+                'client_id'    => $clientId,
+                'is_anonymous' => false,
+            ]);
+
+            if ($updated) {
+                $this->processPendingCompensations($clientId);
+            }
+
+            return $updated;
+        });
+    }
+
+    private function processPendingCompensations(int $clientId): void
+    {
+        $pendingCompensations = $this->compensationDAO->getPendingPointsCompensationsByClient($clientId);
+
+        foreach ($pendingCompensations as $compensation) {
+            $this->clientDAO->incrementPoints($clientId, (int) $compensation->amount);
+
+            $this->compensationDAO->update($compensation, [
+                'status'     => \App\Enums\CompensationStatus::GRANTED->value,
+                'granted_at' => now(),
+            ]);
+        }
     }
 }

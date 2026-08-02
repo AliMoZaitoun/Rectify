@@ -111,6 +111,8 @@ Route::prefix('complaint')->group(function () {
     Route::get('/track/{code}', [AppComplaintController::class, 'track']);
 
     Route::post('sync-device', [AppComplaintController::class, 'syncDeviceComplaints'])->middleware('auth:sanctum');
+
+    Route::post('{code}/sync-device', [AppComplaintController::class, 'syncDeviceComplaint'])->middleware('auth:sanctum');
 });
 
 /*
