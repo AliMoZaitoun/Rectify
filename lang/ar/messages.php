@@ -36,4 +36,16 @@ return [
         'db_error' => 'حدث خطأ تقني. يرجى مراسلة الدعم بالرمز: :trace_id',
         'no_results' => 'لا توجد نتائج مطابقة.',
     ],
+
+    'complaint' => [
+        'complaint_not_found' => 'الشكوى المطلوبة غير موجودة.',
+        'login_to_claim_reward'            => 'لديك مكافأة تعويضية معلقة! قم بتسجيل الدخول أو إنشاء حساب لاستلام النقاط.',
+        'reveal_identity_to_claim_reward' => 'لديك مكافأة تعويضية معلقة! يرجى إزالة خيار تقديم الشكوى كمجهول لربط النقاط بحسابك.',
+        'cannot_compensate_unresolved_complaint' => 'لا يمكن إضافة تعويض لشكوى لم يتم حلها بعد.',
+        'already_compensated'              => 'تم إضافة تعويض لهذه الشكوى من قبل.',
+        'cannot_delete_granted_compensation' => 'لا يمكن حذف تعويض تم صرفه بالفعل.',
+        'device_id_required'               => 'معرف الجهاز (X-Device-ID) مطلوب لإتمام عملية المزامنة.',
+        'synced_successfully'              => 'تمت مزامنة الشكاوى والتعويضات بنجاح.',
+        'action_added'                     => 'تم إضافة الإجراء بنجاح.',
+    ],
 ];

@@ -18,6 +18,14 @@ class CompensationDAO
             ->first();
     }
 
+    public function byClient(int $clientId, array $relations = [], int $perPage = 15)
+    {
+        return ComplaintCompensation::with($relations)
+            ->where('client_id', $clientId)
+            ->latest()
+            ->paginate($perPage);
+    }
+
     public function ById(int $id, array $relations = []): ?ComplaintCompensation
     {
         return ComplaintCompensation::with($relations)->find($id);
@@ -40,5 +48,15 @@ class CompensationDAO
             ->when(isset($filters['status']), fn($q) => $q->where('status', $filters['status']))
             ->latest()
             ->paginate($perPage);
+    }
+
+    public function getPendingPointsCompensationsByClient(int $clientId)
+    {
+        return ComplaintCompensation::whereHas('complaint', function ($q) use ($clientId) {
+            $q->where('client_id', $clientId);
+        })
+            ->where('type', \App\Enums\CompensationType::POINTS->value)
+            ->where('status', \App\Enums\CompensationStatus::PENDING->value)
+            ->get();
     }
 }

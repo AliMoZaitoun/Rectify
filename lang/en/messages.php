@@ -38,5 +38,15 @@ return [
         'no_results' => 'No results found.',
     ],
 
-
+    'complaint' => [
+        'complaint_not_found' => 'The requested complaint was not found.',
+        'login_to_claim_reward'            => 'You have a pending compensation reward! Log in or create an account to claim your points.',
+        'reveal_identity_to_claim_reward' => 'You have a pending compensation reward! Please unlink the anonymous status from your complaint to claim points to your account.',
+        'cannot_compensate_unresolved_complaint' => 'Cannot add compensation to an unresolved complaint.',
+        'already_compensated'              => 'This complaint has already been compensated.',
+        'cannot_delete_granted_compensation' => 'Cannot delete a compensation that has already been granted.',
+        'device_id_required'               => 'Device ID header (X-Device-ID) is required for synchronization.',
+        'synced_successfully'              => 'Complaints synced successfully.',
+        'action_added'                     => 'Action added successfully.',
+    ],
 ];

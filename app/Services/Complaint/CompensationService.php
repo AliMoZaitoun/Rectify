@@ -5,8 +5,14 @@ namespace App\Services\Complaint;
 use App\DAO\Client\ClientDAO;
 use App\DAO\Complaint\CompensationDAO;
 use App\DTOs\Complaint\CompensationDTO;
+use App\DAO\Complaint\ComplaintDAO;
+use App\Enums\ComplaintStatus;
 use App\Enums\CompensationStatus;
 use App\Enums\CompensationType;
+use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
+use App\Exceptions\V1\Complaint\CompensationNotFoundException;
+use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
+use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
 use App\Models\Complaint\ComplaintCompensation;
 use App\Services\Transaction;
 use Exception;
@@ -16,6 +22,7 @@ class CompensationService
     public function __construct(
         private CompensationDAO $compensationDAO,
         private ClientDAO $clientDAO,
+        private ComplaintDAO $complaintDAO,
         private Transaction $transaction
     ) {}
 
@@ -30,10 +37,22 @@ class CompensationService
 
             $existing = $this->compensationDAO->byComplaintId($dto->complaintId);
             if ($existing) {
-                throw new Exception(__('messages.complaint.already_compensated'));
+                throw new ComplaintAlreadyCompensatedException();
             }
 
-            $isPointsForClient = ($dto->type === CompensationType::POINTS && $dto->clientId && $dto->amount > 0);
+            $complaint = $this->complaintDAO->byId($dto->complaintId);
+
+            $complaintStatus = $complaint->status instanceof ComplaintStatus
+                ? $complaint->status->value
+                : $complaint->status;
+
+            if ($complaintStatus !== ComplaintStatus::RESOLVED->value) {
+                throw new UnresolvedComplaintCompensationException();
+            }
+
+            $isAnonymous = $complaint ? ((bool) $complaint->is_anonymous || is_null($dto->clientId)) : true;
+
+            $isPointsForClient = ($dto->type === CompensationType::POINTS && $dto->clientId && $dto->amount > 0 && ! $isAnonymous);
 
             $status = $isPointsForClient ? CompensationStatus::GRANTED->value : CompensationStatus::PENDING->value;
             $grantedAt = $isPointsForClient ? now() : null;
@@ -60,13 +79,18 @@ class CompensationService
         });
     }
 
+    public function getByClient(int $clientId, array $relations = [], int $perPage = 15)
+    {
+        return $this->compensationDAO->byClient($clientId, $relations, $perPage);
+    }
+
     public function updateStatus(int $compensationId, CompensationStatus $status): ComplaintCompensation
     {
         return $this->transaction->execute(function () use ($compensationId, $status) {
             $compensation = $this->compensationDAO->ById($compensationId);
 
             if (! $compensation) {
-                throw new Exception(__('messages.common.not_found'));
+                throw new CompensationNotFoundException();
             }
 
             if ($status === CompensationStatus::GRANTED && $compensation->status !== CompensationStatus::GRANTED->value) {
@@ -95,7 +119,7 @@ class CompensationService
             $compensation = $this->compensationDAO->ById($compensationId);
 
             if (! $compensation) {
-                throw new Exception(__('messages.common.not_found'));
+                throw new CompensationNotFoundException();
             }
 
             $statusValue = $compensation->status instanceof CompensationStatus
@@ -103,15 +127,15 @@ class CompensationService
                 : $compensation->status;
 
             if ($statusValue === CompensationStatus::GRANTED->value) {
-                throw new Exception(__('messages.complaint.cannot_delete_granted_compensation'));
+                throw new CannotDeleteGrantedCompensationException();
             }
 
             return $this->compensationDAO->delete($compensation);
         });
     }
 
-    public function getCompensationForComplaint(int $complaintId): ?ComplaintCompensation
+    public function getCompensationForComplaint(int $complaintId, array $relations = []): ?ComplaintCompensation
     {
-        return $this->compensationDAO->byComplaintId($complaintId, ['approvedBy', 'client']);
+        return $this->compensationDAO->byComplaintId($complaintId, $relations);
     }
 }

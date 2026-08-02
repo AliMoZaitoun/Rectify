@@ -2,22 +2,26 @@
 
 namespace App\Services\Complaint;
 
-use App\DAO\Complaint\ComplaintDAO;
+use App\DAO\Client\ClientDAO;
 use App\DAO\Complaint\CategoryDAO;
+use App\DAO\Complaint\CompensationDAO;
 use App\DAO\Complaint\ComplaintActionDAO;
+use App\DAO\Complaint\ComplaintDAO;
 use App\DAO\Complaint\ComplaintHistoryDAO;
 use App\DTOs\Complaint\ChangeComplaintStatusDTO;
 use App\DTOs\Complaint\ComplaintActionDTO;
 use App\DTOs\Complaint\Create\ComplaintHistoryDTO;
 use App\DTOs\Complaint\Create\CreateComplaintDTO;
-use App\Exceptions\NotFoundException;
+use App\Enums\CompensationStatus;
+use App\Enums\ComplaintPriority;
+use App\Enums\ComplaintStatus;
+use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
+use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
 use App\Models\Complaint\Complaint;
 use App\Services\FileManagerService;
 use App\Services\TransactionService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
-use App\Enums\ComplaintStatus;
-use App\Enums\ComplaintPriority;
 
 class ComplaintService
 {
@@ -26,6 +30,8 @@ class ComplaintService
         protected CategoryDAO $categoryDAO,
         protected ComplaintHistoryDAO $historyDAO,
         protected ComplaintActionDAO $actionDAO,
+        private CompensationDAO $compensationDAO,
+        protected ClientDAO $clientDAO,
         private TransactionService $transaction,
         private FileManagerService $fileManager
     ) {}
@@ -38,18 +44,20 @@ class ComplaintService
     public function findById(int $id, array $relations = []): Complaint
     {
         $complaint = $this->complaintDAO->byId($id, $relations);
-        if (!$complaint) {
-            throw new NotFoundException("Complaint");
+        if (! $complaint) {
+            throw new ComplaintNotFoundException();
         }
+
         return $complaint;
     }
 
     public function trackByCode(string $code, array $relations = []): Complaint
     {
         $complaint = $this->complaintDAO->byTrackingCode($code, $relations);
-        if (!$complaint) {
-            throw new NotFoundException("Complaint");
+        if (! $complaint) {
+            throw new ComplaintNotFoundException();
         }
+
         return $complaint;
     }
 
@@ -76,17 +84,17 @@ class ComplaintService
             $clientId = $dto->clientId;
 
             $complaintData = [
-                'client_id'      => $clientId,
-                'device_id'      => $dto->device_id,
-                'branch_id'      => $dto->branchId,
-                'category_id'    => $dto->categoryId,
-                'title'          => $dto->title,
-                'description'    => $dto->description,
-                'priority'       => ComplaintPriority::MEDIUM->value,
-                'is_anonymous'   => $dto->isAnonymous,
-                'tracking_code'  => $trackingCode,
-                'sla_due_at'     => $slaDueAt,
-                'status' => ComplaintStatus::PENDING->value,
+                'client_id'     => $clientId,
+                'device_id'     => $dto->device_id,
+                'branch_id'     => $dto->branchId,
+                'category_id'   => $dto->categoryId,
+                'title'         => $dto->title,
+                'description'   => $dto->description,
+                'priority'      => ComplaintPriority::MEDIUM->value,
+                'is_anonymous'  => $dto->isAnonymous,
+                'tracking_code' => $trackingCode,
+                'sla_due_at'    => $slaDueAt,
+                'status'        => ComplaintStatus::PENDING->value,
             ];
 
             $complaint = $this->complaintDAO->store($complaintData);
@@ -101,11 +109,11 @@ class ComplaintService
 
             $this->historyDAO->store($historyDto);
 
-            if (!empty($attachments)) {
+            if (! empty($attachments)) {
                 $this->fileManager->storeFile(
                     model: $complaint,
                     files: $attachments,
-                    folderPath: "complaints",
+                    folderPath: 'complaints',
                     relationName: 'media'
                 );
             }
@@ -155,7 +163,6 @@ class ComplaintService
         });
     }
 
-
     public function updateStatus(Complaint $complaint, string $status): bool
     {
         return $this->complaintDAO->update($complaint, ['status' => $status]);
@@ -167,7 +174,7 @@ class ComplaintService
 
             $action = $this->actionDAO->store($dto);
 
-            if (!empty($attachments)) {
+            if (! empty($attachments)) {
                 $this->fileManager->storeFile(
                     model: $action,
                     files: $attachments,
@@ -211,6 +218,33 @@ class ComplaintService
             }
 
             return $action->load(['actor', 'media']);
+        });
+    }
+
+    public function linkGuestComplaintsToClient(?string $deviceId, int $clientId): int
+    {
+        if (empty($deviceId)) {
+            throw new DeviceIdRequiredException();
+        }
+
+        return $this->transaction->execute(function () use ($deviceId, $clientId) {
+
+            $updatedCount = $this->complaintDAO->linkComplaintsAndRevealIdentity($deviceId, $clientId);
+
+            if ($updatedCount > 0) {
+                $pendingCompensations = $this->compensationDAO->getPendingPointsCompensationsByClient($clientId);
+
+                foreach ($pendingCompensations as $compensation) {
+                    $this->clientDAO->incrementPoints($clientId, (int) $compensation->amount);
+
+                    $this->compensationDAO->update($compensation, [
+                        'status'     => CompensationStatus::GRANTED->value,
+                        'granted_at' => now(),
+                    ]);
+                }
+            }
+
+            return $updatedCount;
         });
     }
 }

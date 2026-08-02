@@ -8,10 +8,10 @@ use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
 use App\Http\Controllers\V1\Complaint\CategoryController;
 use App\Http\Controllers\V1\Complaint\AppComplaintController;
+use App\Http\Controllers\V1\Complaint\Compensation\CompensationController;
 use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
-use App\Http\Controllers\V1\Dashboard\CompensationController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
 use Illuminate\Support\Facades\Artisan;
@@ -104,9 +104,13 @@ Route::prefix('complaint')->group(function () {
 
     Route::get('/my-complaints', [AppComplaintController::class, 'myComplaints']);
 
+    Route::get('/my-compensations', [AppComplaintController::class, 'myCompensations'])->middleware('auth:sanctum');
+
     Route::post('/track/{code}/reply', [AppComplaintController::class, 'clientReply']);
 
     Route::get('/track/{code}', [AppComplaintController::class, 'track']);
+
+    Route::post('sync-device', [AppComplaintController::class, 'syncDeviceComplaints'])->middleware('auth:sanctum');
 });
 
 /*

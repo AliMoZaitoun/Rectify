@@ -9,7 +9,7 @@ class ComplaintDAO
 {
     public function paginate(array $relations = [], int $perPage = 15): LengthAwarePaginator
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
@@ -35,10 +35,9 @@ class ComplaintDAO
             ->first();
     }
 
-
     public function byClientOrDevice(?int $clientId, ?string $deviceId, int $perPage = 15): LengthAwarePaginator
     {
-        return Complaint::with(['branch', 'category'])
+        return Complaint::with(['branch', 'category', 'compensation'])
             ->when($clientId, function ($query) use ($clientId) {
                 $query->where('client_id', $clientId);
             })
@@ -48,6 +47,20 @@ class ComplaintDAO
             })
             ->latest()
             ->paginate($perPage);
+    }
+
+    public function linkComplaintsAndRevealIdentity(string $deviceId, int $clientId): int
+    {
+        return Complaint::where(function ($q) use ($deviceId, $clientId) {
+            $q->whereNull('client_id')->where('device_id', $deviceId);
+        })
+            ->orWhere(function ($q) use ($clientId) {
+                $q->where('client_id', $clientId)->where('is_anonymous', true);
+            })
+            ->update([
+                'client_id'    => $clientId,
+                'is_anonymous' => false
+            ]);
     }
 
     public function byBranch(int $branchId, array $filters = [], int $perPage = 15): LengthAwarePaginator

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\V1\Dashboard;
+namespace App\Http\Controllers\V1\Complaint\Compensation;
 
 use App\DTOs\Complaint\CompensationDTO;
 use App\Enums\CompensationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
-use App\Http\Resources\V1\Complaint\CompensationResource;
+use App\Http\Resources\V1\Compensation\AppCompensationResource;
+use App\Http\Resources\V1\Compensation\DashboardCompensationResource;
 use App\Services\Complaint\CompensationService;
 use App\Services\Complaint\ComplaintService;
 use App\Traits\ResponseTrait;
@@ -29,7 +30,7 @@ class CompensationController extends Controller
             perPage: $request->integer('per_page', 15)
         );
 
-        return $this->useResource($compensations, CompensationResource::class);
+        return $this->successCollection($compensations, DashboardCompensationResource::class);
     }
 
     public function store(StoreCompensationRequest $request, int $complaintId)
@@ -46,18 +47,14 @@ class CompensationController extends Controller
 
         $compensation = $this->compensationService->compensate($dto);
 
-        return $this->useResource($compensation, CompensationResource::class, __('messages.common.stored'));
+        return $this->useResource($compensation, DashboardCompensationResource::class, __('messages.common.stored'));
     }
 
     public function showByComplaint(int $complaintId)
     {
-        $compensation = $this->compensationService->getCompensationForComplaint($complaintId);
+        $compensation = $this->compensationService->getCompensationForComplaint($complaintId, ['approvedBy', 'client']);
 
-        if (! $compensation) {
-            return $this->errorResponse(__('messages.common.not_found'), 404);
-        }
-
-        return $this->useResource($compensation, CompensationResource::class);
+        return $this->useResource($compensation, DashboardCompensationResource::class);
     }
 
     public function updateStatus(Request $request, int $id)
@@ -69,6 +66,6 @@ class CompensationController extends Controller
         $status = CompensationStatus::from($request->status);
         $compensation = $this->compensationService->updateStatus($id, $status);
 
-        return $this->useResource($compensation, CompensationResource::class, __('messages.common.updated'));
+        return $this->useResource($compensation, DashboardCompensationResource::class, __('messages.common.updated'));
     }
 }

@@ -60,8 +60,7 @@ class DashboardComplaintResource extends JsonResource
                 'is_spam'             => (bool) $this->is_spam,
             ],
 
-            'compensation' => new DashboardCompensationResource($this->whenLoaded('compensation')),
-
+            'compensation' => new DashboardCompensationResource($this->whenLoaded('compensation'))
         ];
     }
 }

@@ -7,7 +7,9 @@ use App\DTOs\Complaint\Create\CreateComplaintDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\CreateComplaintActionRequest;
 use App\Http\Requests\V1\Complaint\StoreComplaintRequest;
+use App\Http\Resources\V1\Compensation\AppCompensationResource;
 use App\Http\Resources\V1\Complaint\AppComplaintResource;
+use App\Services\Complaint\CompensationService;
 use App\Services\Complaint\ComplaintService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -18,7 +20,8 @@ class AppComplaintController extends Controller
     use ResponseTrait;
 
     public function __construct(
-        private ComplaintService $service
+        private ComplaintService $service,
+        private CompensationService $compensationService
     ) {}
 
     public function store(StoreComplaintRequest $request)
@@ -64,5 +67,25 @@ class AppComplaintController extends Controller
         );
 
         return $this->successResponse($action, __('messages.complaint.action_added'));
+    }
+
+    public function myCompensations()
+    {
+        $client = Auth::user()->client;
+
+        $compensations = $this->compensationService->getByClient($client->id, ['complaint']);
+
+        return $this->successCollection($compensations, AppCompensationResource::class);
+    }
+
+    public function syncDeviceComplaints(Request $request)
+    {
+        $client = Auth::guard('sanctum')->user()?->client;
+
+        $deviceId = $request->header('X-Device-ID') ?? $request->input('device_id');
+
+        $syncedCount = $this->service->linkGuestComplaintsToClient($deviceId, $client->id);
+
+        return $this->successResponse(['synced_count' => $syncedCount], __('messages.complaint.synced_successfully'));
     }
 }
