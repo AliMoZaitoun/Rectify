@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\ClientController;
 use App\Http\Controllers\V1\Complaint\CategoryController;
 use App\Http\Controllers\V1\Complaint\AppComplaintController;
 use App\Http\Controllers\V1\Complaint\Compensation\CompensationController;
+use App\Http\Controllers\V1\Complaint\ComplaintReportController;
 use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
@@ -113,6 +114,13 @@ Route::prefix('complaint')->group(function () {
     Route::post('sync-device', [AppComplaintController::class, 'syncDeviceComplaints'])->middleware('auth:sanctum');
 
     Route::post('{code}/sync-device', [AppComplaintController::class, 'syncDeviceComplaint'])->middleware('auth:sanctum');
+
+
+    # New
+
+    Route::post('{id}/rate', [AppComplaintController::class, 'rate']);
+
+    Route::post('complaints/{id}/reopen', [AppComplaintController::class, 'reopen']);
 });
 
 /*
@@ -127,6 +135,8 @@ Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(functi
 
     Route::put('/{id}/status', [DashboardComplaintController::class, 'changeStatus']);
     Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
+
+    Route::get('reports', [ComplaintReportController::class, 'index']);
 });
 
 Route::prefix('dashboard/compensations')->middleware(['auth:sanctum'])->group(function () {

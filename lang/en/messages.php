@@ -48,5 +48,14 @@ return [
         'device_id_required'               => 'Device ID header (X-Device-ID) is required for synchronization.',
         'synced_successfully'              => 'Complaints synced successfully.',
         'action_added'                     => 'Action added successfully.',
+
+        'cannot_rate_unresolved' => 'You cannot rate a complaint that is not resolved yet.',
+        'already_rated'          => 'You have already rated the resolution of this complaint.',
+        'rated_successfully'     => 'Thank you! Your rating has been submitted successfully.',
+
+        'cannot_reopen'         => 'You can only reopen complaints that have been resolved.',
+        'reopened_successfully' => 'Complaint has been reopened successfully and will be reviewed.',
+
+        'report_generated_successfully' => 'Complaints and performance report generated successfully.',
     ],
 ];

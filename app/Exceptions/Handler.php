@@ -3,9 +3,12 @@
 namespace App\Exceptions;
 
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
+use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
+use App\Exceptions\V1\Complaint\ComplaintAlreadyRatedException;
 use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
+use App\Exceptions\V1\Complaint\ComplaintNotResolvedForRatingException;
 use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
 use App\Exceptions\V1\EmailAlreadyVerifiedException;
@@ -101,6 +104,18 @@ class Handler
         });
 
         $exceptions->render(function (ComplaintNotFoundException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (ComplaintNotResolvedForRatingException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (ComplaintAlreadyRatedException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (CannotReopenComplaintException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
         });
     }

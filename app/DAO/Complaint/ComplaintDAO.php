@@ -7,13 +7,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ComplaintDAO
 {
-    public function paginate(array $relations = [], int $perPage = 15): LengthAwarePaginator
+    public function paginate(array $filters = [], array $relations = [], int $perPage = 15)
     {
         $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
             ->with($allRelations)
+            ->when(! empty($filters['status']), fn($q) => $q->where('status', $filters['status']))
+            ->when(! empty($filters['priority']), fn($q) => $q->where('priority', $filters['priority']))
+            ->when(! empty($filters['category_id']), fn($q) => $q->where('category_id', $filters['category_id']))
             ->latest()
             ->paginate($perPage);
     }

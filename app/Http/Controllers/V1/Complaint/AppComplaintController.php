@@ -6,6 +6,8 @@ use App\DTOs\Complaint\ComplaintActionDTO;
 use App\DTOs\Complaint\Create\CreateComplaintDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\CreateComplaintActionRequest;
+use App\Http\Requests\V1\Complaint\RateComplaintRequest;
+use App\Http\Requests\V1\Complaint\ReopenComplaintRequest;
 use App\Http\Requests\V1\Complaint\StoreComplaintRequest;
 use App\Http\Resources\V1\Compensation\AppCompensationResource;
 use App\Http\Resources\V1\Complaint\AppComplaintResource;
@@ -101,6 +103,39 @@ class AppComplaintController extends Controller
         return $this->successResponse(
             ['tracking_code' => $code],
             __('messages.complaint.synced_successfully')
+        );
+    }
+
+    public function rate(int $id, RateComplaintRequest $request)
+    {
+        $client = Auth::guard('sanctum')->user()?->client;
+
+        $dto = $request->toDTO($id, $client?->id);
+
+        $rating = $this->service->rateComplaint($id, $dto);
+
+        return $this->successResponse(
+            $rating,
+            __('messages.complaint.rated_successfully')
+        );
+    }
+
+    public function reopen(int $id, ReopenComplaintRequest $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        $dto = $request->toDTO(
+            complaintId: $id,
+            actorId: $user?->id,
+            actorType: $user ? get_class($user) : null
+        );
+
+        $complaint = $this->service->reopenComplaint($dto);
+
+        return $this->useResource(
+            $complaint,
+            AppComplaintResource::class,
+            __('messages.complaint.reopened_successfully')
         );
     }
 }

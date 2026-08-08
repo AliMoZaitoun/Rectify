@@ -89,4 +89,14 @@ class Complaint extends Model
     {
         return $this->hasOne(ComplaintCompensation::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(ComplaintRating::class);
+    }
+
+    public function latestRating()
+    {
+        return $this->hasOne(ComplaintRating::class)->latestOfMany();
+    }
 }

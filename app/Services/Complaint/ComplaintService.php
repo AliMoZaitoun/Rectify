@@ -8,14 +8,20 @@ use App\DAO\Complaint\CompensationDAO;
 use App\DAO\Complaint\ComplaintActionDAO;
 use App\DAO\Complaint\ComplaintDAO;
 use App\DAO\Complaint\ComplaintHistoryDAO;
+use App\DAO\Complaint\ComplaintRatingDAO;
 use App\DTOs\Complaint\ChangeComplaintStatusDTO;
 use App\DTOs\Complaint\ComplaintActionDTO;
 use App\DTOs\Complaint\Create\ComplaintHistoryDTO;
 use App\DTOs\Complaint\Create\CreateComplaintDTO;
+use App\DTOs\Complaint\RateComplaintDTO;
+use App\DTOs\Complaint\ReopenComplaintDTO;
 use App\Enums\CompensationStatus;
 use App\Enums\ComplaintPriority;
 use App\Enums\ComplaintStatus;
+use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
+use App\Exceptions\V1\Complaint\ComplaintAlreadyRatedException;
 use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
+use App\Exceptions\V1\Complaint\ComplaintNotResolvedForRatingException;
 use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
 use App\Models\Complaint\Complaint;
 use App\Services\FileManagerService;
@@ -32,13 +38,14 @@ class ComplaintService
         protected ComplaintActionDAO $actionDAO,
         private CompensationDAO $compensationDAO,
         protected ClientDAO $clientDAO,
+        protected ComplaintRatingDAO $ratingDAO,
         private TransactionService $transaction,
         private FileManagerService $fileManager
     ) {}
 
-    public function paginate(array $relations = [], int $perPage = 15): LengthAwarePaginator
+    public function paginate(array $filters = [], array $relations = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->complaintDAO->paginate($relations, $perPage);
+        return $this->complaintDAO->paginate($filters, $relations, $perPage);
     }
 
     public function findById(int $id, array $relations = []): Complaint
@@ -272,5 +279,69 @@ class ComplaintService
                 'granted_at' => now(),
             ]);
         }
+    }
+
+    public function rateComplaint(int $complaintId, RateComplaintDTO $dto)
+    {
+        $complaint = $this->findById($complaintId);
+
+        $statusValue = $complaint->status instanceof ComplaintStatus
+            ? $complaint->status->value
+            : $complaint->status;
+
+        if ($statusValue !== ComplaintStatus::RESOLVED->value) {
+            throw new ComplaintNotResolvedForRatingException();
+        }
+
+        $latestRating = $this->ratingDAO->latestByComplaintId($complaintId);
+        if ($latestRating && $complaint->resolved_at && $latestRating->created_at->gt($complaint->resolved_at)) {
+            throw new ComplaintAlreadyRatedException();
+        }
+
+        return $this->transaction->execute(function () use ($dto) {
+            return $this->ratingDAO->store($dto->toArray());
+        });
+    }
+
+    public function reopenComplaint(ReopenComplaintDTO $dto): Complaint
+    {
+        $complaint = $this->findById($dto->complaintId);
+
+        $oldStatus = $complaint->status instanceof ComplaintStatus
+            ? $complaint->status->value
+            : $complaint->status;
+
+        if ($oldStatus !== ComplaintStatus::RESOLVED->value) {
+            throw new CannotReopenComplaintException();
+        }
+
+        return $this->transaction->execute(function () use ($complaint, $oldStatus, $dto) {
+            $targetStatus = ComplaintStatus::IN_PROGRESS->value;
+
+            $this->complaintDAO->update($complaint, [
+                'status'      => $targetStatus,
+                'resolved_at' => null,
+            ]);
+
+            $lastHistory = $complaint->histories()->first();
+            $durationInHours = $lastHistory
+                ? (int) $lastHistory->created_at->diffInHours(now())
+                : (int) $complaint->created_at->diffInHours(now());
+
+            $historyDto = new ComplaintHistoryDTO(
+                complaintId: $complaint->id,
+                newStatus: $targetStatus,
+                oldStatus: $oldStatus,
+                assignedToId: $complaint->assigned_to_id,
+                changedByType: $dto->actorType,
+                changedById: $dto->actorId,
+                durationInHours: $durationInHours,
+                comment: "Reopened by customer: {$dto->reason}"
+            );
+
+            $this->historyDAO->store($historyDto);
+
+            return $complaint->fresh(['histories']);
+        });
     }
 }

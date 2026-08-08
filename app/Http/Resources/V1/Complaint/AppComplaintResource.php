@@ -37,6 +37,10 @@ class AppComplaintResource extends JsonResource
             'actions'        => ComplaintActionResource::collection($this->whenLoaded('actions')),
             'histories'      => AppComplaintHistoryResource::collection($this->whenLoaded('histories')),
 
+            'can_be_rated' => $this->status === ComplaintStatus::RESOLVED->value && !$this->latestRating,
+            'can_be_reopened' => $this->status === ComplaintStatus::RESOLVED->value,
+            'latest_rating' => $this->whenLoaded('latestRating'),
+
             'compensation' => new AppCompensationResource($this->whenLoaded('compensation')),
         ];
     }

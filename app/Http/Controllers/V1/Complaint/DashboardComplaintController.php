@@ -8,6 +8,7 @@ use App\DTOs\Complaint\ComplaintActionDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\ChangeComplaintStatusRequest;
 use App\Http\Requests\V1\Complaint\CreateComplaintActionRequest;
+use App\Http\Requests\V1\Complaint\FilterComplaintRequest;
 use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
 use App\Http\Resources\V1\Complaint\CompensationResource;
 use App\Http\Resources\V1\Complaint\DashboardComplaintResource;
@@ -26,9 +27,14 @@ class DashboardComplaintController extends Controller
         private CompensationService $compensationService
     ) {}
 
-    public function index()
+    public function index(FilterComplaintRequest $request)
     {
-        $complaints = $this->service->paginate();
+        $perPage = $request->input('per_page', 15);
+
+        $complaints = $this->service->paginate(
+            filters: $request->filters(),
+            perPage: (int) $perPage
+        );
 
         return $this->successCollection($complaints, DashboardComplaintResource::class);
     }
