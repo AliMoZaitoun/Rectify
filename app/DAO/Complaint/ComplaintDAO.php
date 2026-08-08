@@ -66,20 +66,19 @@ class ComplaintDAO
             ]);
     }
 
-    public function byBranch(int $branchId, array $filters = [], int $perPage = 15): LengthAwarePaginator
+    public function byBranch(int $branchId, array $filters = [], int $perPage = 15, array $relations = []): LengthAwarePaginator
     {
-        $query = Complaint::with(['category', 'client'])
-            ->where('branch_id', $branchId);
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation'];
+        $allRelations = array_merge($defaultRelations, $relations);
 
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        if (!empty($filters['priority'])) {
-            $query->where('priority', $filters['priority']);
-        }
-
-        return $query->latest()->paginate($perPage);
+        return Complaint::query()
+            ->where('branch_id', $branchId)
+            ->with($allRelations)
+            ->when(! empty($filters['status']), fn($q) => $q->where('status', $filters['status']))
+            ->when(! empty($filters['priority']), fn($q) => $q->where('priority', $filters['priority']))
+            ->when(! empty($filters['category_id']), fn($q) => $q->where('category_id', $filters['category_id']))
+            ->latest()
+            ->paginate($perPage);
     }
 
     public function update(Complaint $complaint, array $data): bool

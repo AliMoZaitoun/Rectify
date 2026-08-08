@@ -73,9 +73,9 @@ class ComplaintService
         return $this->complaintDAO->byClientOrDevice($clientId, $deviceId, $perPage);
     }
 
-    public function branchComplaints(int $branchId, array $filters = [], int $perPage = 15): LengthAwarePaginator
+    public function branchComplaints(int $branchId, array $filters = [], int $perPage = 15, array $relations = []): LengthAwarePaginator
     {
-        return $this->complaintDAO->byBranch($branchId, $filters, $perPage);
+        return $this->complaintDAO->byBranch($branchId, $filters, $perPage, $relations);
     }
 
     public function createComplaint(CreateComplaintDTO $dto, array $attachments = []): Complaint

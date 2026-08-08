@@ -46,10 +46,15 @@ class DashboardComplaintController extends Controller
         return $this->useResource($complaint, DashboardComplaintResource::class);
     }
 
-    public function branchComplaints(int $branchId, Request $request)
+    public function branchComplaints(int $branchId, FilterComplaintRequest $request)
     {
-        $filters = $request->only(['status', 'priority']);
-        $complaints = $this->service->branchComplaints($branchId, $filters);
+        $perPage = $request->input('per_page', 15);
+
+        $complaints = $this->service->branchComplaints(
+            $branchId,
+            filters: $request->filters(),
+            perPage: (int) $perPage
+        );
 
         return $this->successCollection($complaints, DashboardComplaintResource::class);
     }
