@@ -15,6 +15,7 @@ use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
+use App\Http\Controllers\V1\RoleController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -54,7 +55,7 @@ Route::prefix('client')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Core System Routes (Branches, Employees)
+| Core System Routes (Branches, Employees, Roles)
 |--------------------------------------------------------------------------
 */
 Route::prefix('branch')->group(function () {
@@ -77,6 +78,40 @@ Route::prefix('employee')->group(function () {
     Route::post('', [EmployeeController::class, 'store']);
     Route::put('/{id}', [EmployeeController::class, 'update']);
     Route::delete('/{id}', [EmployeeController::class, 'destroy']);
+});
+
+// Role
+Route::prefix('role')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [RoleController::class, 'index'])
+        ->middleware(['permission:read.role']);
+
+    Route::post('/', [RoleController::class, 'store'])
+        ->middleware(['permission:create.role']);
+
+    Route::put('{id}', [RoleController::class, 'update'])
+        ->middleware(['permission:update.role']);
+
+    Route::post('assignRoles/{user_id}', [RoleController::class, 'assignRoles'])
+        ->middleware(['permission:create.role']);
+
+    # Search for role by id or name #
+    Route::get('{id}', [RoleController::class, 'show'])
+        ->middleware(['permission:read.role']);
+
+    Route::get('name/{role_name}', [RoleController::class, 'showByName'])
+        ->middleware(['permission:read.role']);
+
+    # Manage Permissions for a role #
+    Route::post('selectPermission/{role_id}', [RoleController::class, 'selectPermission'])
+        ->middleware(['permission:update.role']);
+
+    # Delete a role #
+    Route::delete('{id}', [RoleController::class, 'destroy'])
+        ->middleware(['permission:delete.role']);
+});
+
+Route::prefix('permission')->middleware('auth:sanctum')->group(function () {
+    Route::get('', [PermissionController::class, 'index']);
 });
 
 /*
