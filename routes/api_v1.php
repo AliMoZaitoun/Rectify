@@ -15,6 +15,7 @@ use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\OtpController;
+use App\Http\Controllers\V1\PermissionController;
 use App\Http\Controllers\V1\RoleController;
 use Illuminate\Support\Facades\Artisan;
 
