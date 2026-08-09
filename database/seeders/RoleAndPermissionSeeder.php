@@ -15,6 +15,8 @@ class RoleAndPermissionSeeder extends Seeder
             'client',
             'employee',
             'branch',
+            'role',
+            'permission',
 
             'complaint',
             'category',
@@ -34,8 +36,27 @@ class RoleAndPermissionSeeder extends Seeder
         $admin->syncPermissions(Permission::all());
 
         // Employee
-        $employee = Role::firstOrCreate(['name' => 'employee']);
-        $employee->syncPermissions([]);
+        $staff = Role::firstOrCreate(['name' => 'staff']);
+        $staff->syncPermissions([
+            'read.client',
+            'read.branch',
+            'read.complaint',
+            'update.complaint',
+            'read.location'
+        ]);
+
+        $manager = Role::firstOrCreate(['name' => 'manager']);
+        $manager->syncPermissions([
+            'update.branch',
+            'create.category',
+            'read.category',
+            'update.category',
+            'delete.category',
+            'create.employee',
+            'read.employee',
+            'update.employee',
+            'delete.employee'
+        ]);
 
         // Client
         $client = Role::firstOrCreate(['name' => 'client']);
