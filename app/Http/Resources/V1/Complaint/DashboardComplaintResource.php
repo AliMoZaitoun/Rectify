@@ -26,6 +26,14 @@ class DashboardComplaintResource extends JsonResource
             ? $this->priority->label()
             : $priorityValue;
 
+        $hasRatingForCurrentResolution = $this->relationLoaded('latestRating')
+            && $this->latestRating
+            && $this->resolved_at
+            && $this->latestRating->created_at->gt($this->resolved_at);
+
+        $isResolved = $statusValue === ComplaintStatus::RESOLVED->value;
+
+
         return [
             'id'             => $this->id,
             'tracking_code'  => $this->tracking_code,
@@ -59,6 +67,12 @@ class DashboardComplaintResource extends JsonResource
                 'suggested_category' => $this->ai_suggested_category,
                 'is_spam'             => (bool) $this->is_spam,
             ],
+
+            'can_be_rated'    => $isResolved && ! $hasRatingForCurrentResolution,
+            'can_be_reopened' => $isResolved,
+
+            'latest_rating'   => new ComplaintRatingResource($this->whenLoaded('latestRating')),
+
 
             'compensation' => new DashboardCompensationResource($this->whenLoaded('compensation'))
         ];

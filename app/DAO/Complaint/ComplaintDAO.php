@@ -9,7 +9,7 @@ class ComplaintDAO
 {
     public function paginate(array $filters = [], array $relations = [], int $perPage = 15)
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
@@ -40,7 +40,7 @@ class ComplaintDAO
 
     public function byClientOrDevice(?int $clientId, ?string $deviceId, int $perPage = 15): LengthAwarePaginator
     {
-        return Complaint::with(['branch', 'category', 'compensation', 'media'])
+        return Complaint::with(['branch', 'category', 'compensation', 'media', 'latestRating'])
             ->when($clientId, function ($query) use ($clientId) {
                 $query->where('client_id', $clientId);
             })
@@ -68,7 +68,7 @@ class ComplaintDAO
 
     public function byBranch(int $branchId, array $filters = [], int $perPage = 15, array $relations = []): LengthAwarePaginator
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()

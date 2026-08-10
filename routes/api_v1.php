@@ -13,7 +13,9 @@ use App\Http\Controllers\V1\Complaint\ComplaintReportController;
 use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
+use App\Http\Controllers\V1\DeviceTokenController;
 use App\Http\Controllers\V1\LocationController;
+use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\OtpController;
 use App\Http\Controllers\V1\PermissionController;
 use App\Http\Controllers\V1\RoleController;
@@ -36,6 +38,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('refreshToken', [LoginController::class, 'refreshToken']);
     Route::post('logout', [LoginController::class, 'logout']);
 });
+
+Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
+
+Route::prefix('notifications')->group(function () {
+    Route::get('', [NotificationController::class, 'index']);
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
+});
+
+Route::get('testNot/{client_id}', [NotificationController::class, 'test']);
 
 /*
 |--------------------------------------------------------------------------
@@ -151,12 +165,10 @@ Route::prefix('complaint')->group(function () {
 
     Route::post('{code}/sync-device', [AppComplaintController::class, 'syncDeviceComplaint'])->middleware('auth:sanctum');
 
-
     # New
+    Route::post('{code}/rate', [AppComplaintController::class, 'rate']);
 
-    Route::post('{id}/rate', [AppComplaintController::class, 'rate']);
-
-    Route::post('complaints/{id}/reopen', [AppComplaintController::class, 'reopen']);
+    Route::post('{code}/reopen', [AppComplaintController::class, 'reopen']);
 });
 
 /*

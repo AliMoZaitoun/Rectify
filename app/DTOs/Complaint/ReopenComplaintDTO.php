@@ -7,16 +7,16 @@ use App\Http\Requests\V1\Complaint\ReopenComplaintRequest;
 class ReopenComplaintDTO
 {
     public function __construct(
-        public readonly int $complaintId,
+        public readonly string $complaintCode,
         public readonly string $reason,
         public readonly ?int $actorId = null,
         public readonly ?string $actorType = null
     ) {}
 
-    public static function fromRequest(ReopenComplaintRequest $request, int $complaintId, ?int $actorId = null, ?string $actorType = null): self
+    public static function fromRequest(ReopenComplaintRequest $request, string $complaintCode, ?int $actorId = null, ?string $actorType = null): self
     {
         return new self(
-            complaintId: $complaintId,
+            complaintCode: $complaintCode,
             reason: $request->validated('reason'),
             actorId: $actorId,
             actorType: $actorType

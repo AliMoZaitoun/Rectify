@@ -19,8 +19,8 @@ class ReopenComplaintRequest extends FormRequest
         ];
     }
 
-    public function toDTO(int $complaintId, ?int $actorId = null, ?string $actorType = null): ReopenComplaintDTO
+    public function toDTO(string $complaintCode, ?int $actorId = null, ?string $actorType = null): ReopenComplaintDTO
     {
-        return ReopenComplaintDTO::fromRequest($this, $complaintId, $actorId, $actorType);
+        return ReopenComplaintDTO::fromRequest($this, $complaintCode, $actorId, $actorType);
     }
 }

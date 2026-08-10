@@ -19,6 +19,7 @@ class RoleAndPermissionSeeder extends Seeder
             'permission',
 
             'complaint',
+            'compensation',
             'category',
             'location'
         ];
@@ -42,7 +43,11 @@ class RoleAndPermissionSeeder extends Seeder
             'read.branch',
             'read.complaint',
             'update.complaint',
-            'read.location'
+            'read.location',
+            'create.compensation',
+            'read.compensation',
+            'update.compensation',
+            'delete.compensation'
         ]);
 
         $manager = Role::firstOrCreate(['name' => 'manager']);
@@ -55,14 +60,21 @@ class RoleAndPermissionSeeder extends Seeder
             'create.employee',
             'read.employee',
             'update.employee',
-            'delete.employee'
+            'delete.employee',
+            'create.compensation',
+            'read.compensation',
+            'update.compensation',
+            'delete.compensation'
         ]);
 
         // Client
         $client = Role::firstOrCreate(['name' => 'client']);
         $client->syncPermissions([
             'read.branch',
-            'create.complaint'
+            'create.complaint',
+            'read.complaint',
+
+            'read.compensation',
         ]);
     }
 }

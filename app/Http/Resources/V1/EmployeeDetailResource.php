@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Http\Resources\V1\Core\BranchResource;
 use App\Http\Resources\V1\Core\EmployeeBranchResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,20 +12,32 @@ class EmployeeDetailResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $employee = $this->resource instanceof User
-            ? $this->resource->employee
-            : $this->resource;
+        $employee = $this->resource instanceof User ? $this->resource->employee : $this->resource;
+        $user     = $this->resource instanceof User ? $this->resource : $this->resource?->user;
 
-        $user = $this->resource instanceof User
-            ? $this->resource
-            : $this->resource->user;
-
+        if (! $employee) {
+            return [
+                'account'         => new UserResource($user),
+                'additional_info' => null,
+            ];
+        }
 
         return [
             'account' => new UserResource($user),
             'additional_info' => [
-                'employee_id'       => $employee->id,
-                'branches'          => EmployeeBranchResource::collection($employee->branches)
+                'employee_id' => $employee->id,
+
+                'current_branch' => $employee->relationLoaded('currentBranch') && $employee->currentBranch
+                    ? new BranchResource($employee->currentBranch->branch)
+                    : null,
+
+                'current_branch_detail' => $employee->relationLoaded('currentBranch')
+                    ? new EmployeeBranchResource($employee->currentBranch)
+                    : null,
+
+                'branches' => $employee->relationLoaded('employeeBranches')
+                    ? EmployeeBranchResource::collection($employee->employeeBranches)
+                    : [],
             ],
         ];
     }

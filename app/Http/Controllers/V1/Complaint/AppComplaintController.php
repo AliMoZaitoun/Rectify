@@ -49,7 +49,7 @@ class AppComplaintController extends Controller
 
     public function track(string $code)
     {
-        $complaint = $this->service->trackByCode($code, ['branch', 'category', 'media', 'actions', 'compensation']);
+        $complaint = $this->service->trackByCode($code, ['branch', 'category', 'media', 'actions', 'compensation', 'latestRating']);
 
         return $this->useResource($complaint, AppComplaintResource::class);
     }
@@ -106,26 +106,26 @@ class AppComplaintController extends Controller
         );
     }
 
-    public function rate(int $id, RateComplaintRequest $request)
+    public function rate(string $code, RateComplaintRequest $request)
     {
         $client = Auth::guard('sanctum')->user()?->client;
 
-        $dto = $request->toDTO($id, $client?->id);
+        $dto = $request->toDTO($code, $client?->id);
 
-        $rating = $this->service->rateComplaint($id, $dto);
+        $rating = $this->service->rateComplaint($code, $dto);
 
         return $this->successResponse(
-            $rating,
+            [],
             __('messages.complaint.rated_successfully')
         );
     }
 
-    public function reopen(int $id, ReopenComplaintRequest $request)
+    public function reopen(string $code, ReopenComplaintRequest $request)
     {
         $user = Auth::guard('sanctum')->user();
 
         $dto = $request->toDTO(
-            complaintId: $id,
+            complaintCode: $code,
             actorId: $user?->id,
             actorType: $user ? get_class($user) : null
         );

@@ -12,7 +12,11 @@ class EmployeeDAO
 
     public function index()
     {
-        return Employee::with(['branches'])->get();
+        return Employee::with([
+            'user',
+            'currentBranch.branch',
+            'employeeBranches.branch',
+        ])->get();
     }
 
     public function store(CreateEmployeeDTO $employeeDTO)
@@ -24,7 +28,11 @@ class EmployeeDAO
 
     public function show(int $id)
     {
-        return Employee::where('id', $id)->with(['branches'])->first();
+        return Employee::where('id', $id)->with([
+            'user',
+            'currentBranch.branch',
+            'employeeBranches.branch'
+        ])->first();
     }
 
     public function update(int $id, UpdateEmployeeDTO $employeeDTO)

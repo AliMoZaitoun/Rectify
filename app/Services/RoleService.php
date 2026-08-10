@@ -11,7 +11,8 @@ use Exception;
 class RoleService
 {
     public function __construct(
-        private RoleDAO $roleDAO
+        private RoleDAO $roleDAO,
+        private Transaction $transaction
     ) {}
 
     public function index()
@@ -19,9 +20,10 @@ class RoleService
         return $this->roleDAO->index();
     }
 
-    public function store(CreateRoleDTO $roleDTO)
+    public function store(CreateRoleDTO $dto)
     {
-        return $this->roleDAO->store($roleDTO);
+        $permissionIds = array_map('intval', $dto->permissions);
+        return $this->roleDAO->store($dto, $permissionIds);
     }
 
     public function show(int $id)
@@ -34,9 +36,13 @@ class RoleService
         return $this->roleDAO->showByName($role_name);
     }
 
-    public function update(int $id, UpdateRoleDTO $roleDTO)
+    public function update(int $id, UpdateRoleDTO $dto)
     {
-        return $this->roleDAO->update($id, $roleDTO);
+        $permissionIds = [];
+        if ($dto->permissions)
+            $permissionIds = array_map('intval', $dto->permissions);
+        $role = $this->roleDAO->update($id, $dto, $permissionIds);
+        return $role;
     }
 
     public function assignUserRoles(int $user_id, array $roles)

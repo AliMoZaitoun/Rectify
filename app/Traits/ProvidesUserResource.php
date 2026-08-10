@@ -11,6 +11,8 @@ trait ProvidesUserResource
 {
     public function resolveUserResource(User $user)
     {
+        $user->loadMissing('roles');
+
         if ($user->type === 'employee') {
             $user->loadMissing('employee');
         } elseif ($user->type === 'client') {

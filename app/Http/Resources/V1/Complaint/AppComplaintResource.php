@@ -19,6 +19,13 @@ class AppComplaintResource extends JsonResource
             ? $this->status->label()
             : $statusValue;
 
+        $hasRatingForCurrentResolution = $this->relationLoaded('latestRating')
+            && $this->latestRating
+            && $this->resolved_at
+            && $this->latestRating->created_at->gt($this->resolved_at);
+
+        $isResolved = $statusValue === ComplaintStatus::RESOLVED->value;
+
         return [
             'tracking_code'  => $this->tracking_code,
             'is_anonymous'   => (bool) $this->is_anonymous,
@@ -37,9 +44,10 @@ class AppComplaintResource extends JsonResource
             'actions'        => ComplaintActionResource::collection($this->whenLoaded('actions')),
             'histories'      => AppComplaintHistoryResource::collection($this->whenLoaded('histories')),
 
-            'can_be_rated' => $this->status === ComplaintStatus::RESOLVED->value && !$this->latestRating,
-            'can_be_reopened' => $this->status === ComplaintStatus::RESOLVED->value,
-            'latest_rating' => $this->whenLoaded('latestRating'),
+            'can_be_rated'    => $isResolved && ! $hasRatingForCurrentResolution,
+            'can_be_reopened' => $isResolved,
+
+            'latest_rating'   => new ComplaintRatingResource($this->whenLoaded('latestRating')),
 
             'compensation' => new AppCompensationResource($this->whenLoaded('compensation')),
         ];

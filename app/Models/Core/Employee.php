@@ -17,8 +17,20 @@ class Employee extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function branches()
+    public function employeeBranches()
     {
         return $this->hasMany(EmployeeBranch::class);
+    }
+
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'employee_branches')
+            ->withPivot(['from_date', 'to_date', 'position'])
+            ->withTimestamps();
+    }
+
+    public function currentBranch()
+    {
+        return $this->hasOne(EmployeeBranch::class)->whereNull('to_date');
     }
 }

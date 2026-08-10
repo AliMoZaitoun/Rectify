@@ -20,8 +20,8 @@ class RateComplaintRequest extends FormRequest
         ];
     }
 
-    public function toDTO(int $complaintId, ?int $clientId = null): RateComplaintDTO
+    public function toDTO(string $complaintCode, ?int $clientId = null): RateComplaintDTO
     {
-        return RateComplaintDTO::fromRequest($this, $complaintId, $clientId);
+        return RateComplaintDTO::fromRequest($this, $complaintCode, $clientId);
     }
 }

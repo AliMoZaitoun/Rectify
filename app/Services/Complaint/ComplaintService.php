@@ -18,6 +18,8 @@ use App\DTOs\Complaint\ReopenComplaintDTO;
 use App\Enums\CompensationStatus;
 use App\Enums\ComplaintPriority;
 use App\Enums\ComplaintStatus;
+use App\Events\ComplaintReplyAdded;
+use App\Events\ComplaintStatusUpdated;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyRatedException;
 use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
@@ -27,6 +29,7 @@ use App\Models\Complaint\Complaint;
 use App\Services\FileManagerService;
 use App\Services\TransactionService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ComplaintService
@@ -131,7 +134,13 @@ class ComplaintService
 
     public function changeStatus(Complaint $complaint, ChangeComplaintStatusDTO $dto): Complaint
     {
-        return $this->transaction->execute(function () use ($complaint, $dto) {
+        $oldStatusValue = $complaint->status instanceof ComplaintStatus
+            ? $complaint->status->value
+            : (string) $complaint->status;
+
+        $newStatusValue = $dto->status->value;
+
+        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $dto, &$oldStatus, &$newStatusValue) {
             $oldStatus = $complaint->status instanceof ComplaintStatus
                 ? $complaint->status->value
                 : $complaint->status;
@@ -166,18 +175,35 @@ class ComplaintService
 
             $this->historyDAO->store($historyDto);
 
-            return $complaint->fresh(['histories', 'assignedTo']);
+            return $complaint->fresh(['histories', 'assignedTo', 'client.user']);
         });
+
+        if ($oldStatus !== $newStatusValue) {
+            ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatus);
+        }
+
+        return $updatedComplaint;
     }
 
     public function updateStatus(Complaint $complaint, string $status): bool
     {
-        return $this->complaintDAO->update($complaint, ['status' => $status]);
+        $oldStatus = $complaint->status;
+        $updated = $this->complaintDAO->update($complaint, ['status' => $status]);
+
+        if ($updated) {
+            $complaint->status = $status;
+            ComplaintStatusUpdated::dispatch($complaint, $oldStatus);
+        }
+
+        return $updated;
     }
 
     public function addAction(Complaint $complaint, ComplaintActionDTO $dto, array $attachments = [])
     {
-        return $this->transaction->execute(function () use ($complaint, $dto, $attachments) {
+        $targetStatus = null;
+        $oldStatusValue = null;
+
+        $action = $this->transaction->execute(function () use ($complaint, $dto, $attachments) {
 
             $action = $this->actionDAO->store($dto);
 
@@ -226,6 +252,15 @@ class ComplaintService
 
             return $action->load(['actor', 'media']);
         });
+
+        ComplaintReplyAdded::dispatch($complaint, $action);
+        if ($targetStatus) {
+
+            $complaint->status = $targetStatus;
+            ComplaintStatusUpdated::dispatch($complaint, $oldStatusValue);
+        }
+
+        return $action;
     }
 
     public function linkAllGuestComplaintsToClient(?string $deviceId, int $clientId): int
@@ -281,9 +316,9 @@ class ComplaintService
         }
     }
 
-    public function rateComplaint(int $complaintId, RateComplaintDTO $dto)
+    public function rateComplaint(string $code, RateComplaintDTO $dto)
     {
-        $complaint = $this->findById($complaintId);
+        $complaint = $this->trackByCode($code);
 
         $statusValue = $complaint->status instanceof ComplaintStatus
             ? $complaint->status->value
@@ -293,19 +328,19 @@ class ComplaintService
             throw new ComplaintNotResolvedForRatingException();
         }
 
-        $latestRating = $this->ratingDAO->latestByComplaintId($complaintId);
+        $latestRating = $this->ratingDAO->latestByComplaintId($complaint->id);
         if ($latestRating && $complaint->resolved_at && $latestRating->created_at->gt($complaint->resolved_at)) {
             throw new ComplaintAlreadyRatedException();
         }
 
-        return $this->transaction->execute(function () use ($dto) {
-            return $this->ratingDAO->store($dto->toArray());
+        return $this->transaction->execute(function () use ($complaint, $dto) {
+            return $this->ratingDAO->store($dto->toArray($complaint->id));
         });
     }
 
     public function reopenComplaint(ReopenComplaintDTO $dto): Complaint
     {
-        $complaint = $this->findById($dto->complaintId);
+        $complaint = $this->trackByCode($dto->complaintCode);
 
         $oldStatus = $complaint->status instanceof ComplaintStatus
             ? $complaint->status->value
@@ -341,7 +376,7 @@ class ComplaintService
 
             $this->historyDAO->store($historyDto);
 
-            return $complaint->fresh(['histories']);
+            return $complaint->fresh(['branch', 'category', 'media', 'actions', 'histories', 'compensation', 'latestRating']);
         });
     }
 }

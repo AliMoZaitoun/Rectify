@@ -6,12 +6,14 @@ use App\DTOs\Role\Create\CreateRoleDTO;
 use App\DTOs\Role\Update\UpdateRoleDTO;
 use App\Exceptions\NotFoundException;
 use App\Models\User;
+use App\Services\Transaction;
 use Spatie\Permission\Models\Role;
 
 class RoleDAO
 {
     public function __construct(
-        private UserDAO $userDAO
+        private UserDAO $userDAO,
+        private Transaction $transaction
     ) {}
 
     public function index()
@@ -19,9 +21,17 @@ class RoleDAO
         return Role::all();
     }
 
-    public function store(CreateRoleDTO $roleDTO)
+    public function store(CreateRoleDTO $dto, array $permissionsIds = [])
     {
-        return Role::create($roleDTO->toArray());
+        return $this->transaction->execute(function () use ($dto, $permissionsIds) {
+            $role = Role::create($dto->toArray());
+
+            if (!empty($permissionsIds)) {
+                $role->syncPermissions($permissionsIds);
+            }
+
+            return $role;
+        });
     }
 
     public function show(int $id, $guardName = 'web')
@@ -49,10 +59,18 @@ class RoleDAO
         return $user;
     }
 
-    public function update(int $id, UpdateRoleDTO $roleDTO)
+    public function update(int $id, UpdateRoleDTO $dto, $permissionsIds = [])
     {
-        $role = $this->show($id);
-        return $role->update($roleDTO->toArray());
+        return $this->transaction->execute(function () use ($id, $dto, $permissionsIds) {
+            $role = $this->show($id);
+            $role->update($dto->toArray());
+
+            if (!empty($permissionsIds)) {
+                $role->syncPermissions($permissionsIds);
+            }
+
+            return $role;
+        });
     }
 
     public function selectPermissions(int $id, array $permissions)

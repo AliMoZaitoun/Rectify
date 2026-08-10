@@ -21,6 +21,7 @@ class ClientDetailResource extends JsonResource
         return [
             'account' => new UserResource($user),
             'additional_info' => [
+                'client_id'     => $client->id,
                 'points'        => $client->points,
             ],
         ];

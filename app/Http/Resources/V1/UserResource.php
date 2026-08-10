@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'created_at'    => $this->created_at->format('Y-m-d h:i A'),
             'created_from'  => $this->created_at->diffForHumans(),
             'verified_at'   => $this?->email_verified_at?->format('Y-m-d h:i A'),
-            'roles'         => $this->getRoleNames()
+            'roles'         => $this->roles->pluck('name')
         ];
     }
 }

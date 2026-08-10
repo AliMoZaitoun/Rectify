@@ -8,6 +8,7 @@ use App\DTOs\User\Update\UpdateUserDTO;
 use App\DTOs\User\Create\CreateUserDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\EmployeeRequest;
+use App\Http\Resources\V1\EmployeeDetailResource;
 use App\Services\Core\EmployeeService;
 use App\Traits\ProvidesUserResource;
 use App\Traits\ResponseTrait;
@@ -24,7 +25,7 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = $this->employeeService->index();
-        return $this->successUserCollection($employees);
+        return $this->successCollection($employees, EmployeeDetailResource::class);
     }
 
     public function store(EmployeeRequest $employeeRequest)

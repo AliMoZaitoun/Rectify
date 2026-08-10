@@ -137,6 +137,7 @@ class UserAndEmployeeSeeder extends Seeder
                 'user_id' => $clientUser->id,
                 'points'  => $clientInfo['points'],
             ]);
+            $clientUser->assignRole(['client']);
         }
     }
 }
