@@ -30,6 +30,6 @@ class NotificationDAO
 
     public function markAllAsRead(User $user): void
     {
-        $user->unreadNotifications->markAsRead();
+        $user->unreadNotifications()->update(['read_at' => now()]);
     }
 }

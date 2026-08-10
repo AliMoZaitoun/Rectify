@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\DeviceType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
 
 class RegisterDeviceTokenRequest extends FormRequest
 {
@@ -16,8 +14,9 @@ class RegisterDeviceTokenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fcm_token'   => ['required', 'string'],
-            'device_type' => ['required', new Enum(DeviceType::class)],
+            'device_id'   => 'required|string',
+            'fcm_token'   => 'required|string',
+            'device_type' => 'required|string|in:android,ios,web',
         ];
     }
 }

@@ -59,12 +59,16 @@ class NotificationController extends Controller
         }
 
         $user = $client->user;
+        $trackingCode = 'TRK-TEST-123';
 
         $user->notify(new BaseNotification(
-            title: '🔔 إشعار جديد!',
-            body: "أهلاً {$user->first_name}، تم بدء العمل على شكواك، رجاءً تابع حالتها.",
-            data: ['type' => 'test_event', 'client_id' => (string) $client->id],
-            actionUrl: '/dashboard'
+            title: __('notifications.complaint_reply_added.title'),
+            body: __('notifications.complaint_reply_added.body', ['tracking_code' => $trackingCode]),
+            data: [
+                'type'          => 'test_event',
+                'tracking_code' => $trackingCode,
+            ],
+            actionUrl: "/complaints/{$trackingCode}"
         ));
 
         $latestNotification = $user->notifications()->latest()->first();

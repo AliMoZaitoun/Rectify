@@ -13,14 +13,17 @@ use Illuminate\Http\Request;
 class DeviceTokenController extends Controller
 {
     use ResponseTrait;
+
     public function __construct(
         protected DeviceTokenService $deviceTokenService
     ) {}
 
     public function store(RegisterDeviceTokenRequest $request)
     {
+        $userId = auth('sanctum')->user()?->id;
+
         $dto = DeviceTokenData::fromRequest(
-            userId: $request->user()->id,
+            userId: $userId,
             validated: $request->validated()
         );
 
@@ -33,8 +36,10 @@ class DeviceTokenController extends Controller
     {
         $request->validate(['fcm_token' => 'required|string']);
 
+        $userId = auth('sanctum')->user()?->id;
+
         $this->deviceTokenService->removeToken(
-            userId: $request->user()->id,
+            userId: $userId,
             fcmToken: $request->fcm_token
         );
 

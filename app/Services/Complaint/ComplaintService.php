@@ -185,7 +185,7 @@ class ComplaintService
         return $updatedComplaint;
     }
 
-    public function updateStatus(Complaint $complaint, string $status): bool
+    public function updateStatus(Complaint $complaint, string $status)
     {
         $oldStatus = $complaint->status;
         $updated = $this->complaintDAO->update($complaint, ['status' => $status]);

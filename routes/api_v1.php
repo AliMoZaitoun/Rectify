@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
 Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
 
-Route::prefix('notifications')->group(function () {
+Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
     Route::get('', [NotificationController::class, 'index']);
     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
     Route::patch('/read-all', [NotificationController::class, 'markAllAsRead']);

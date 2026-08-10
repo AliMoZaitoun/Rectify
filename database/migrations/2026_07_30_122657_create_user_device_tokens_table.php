@@ -10,10 +10,15 @@ return new class extends Migration
     {
         Schema::create('user_device_tokens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('device_id')->index();
+
             $table->string('fcm_token')->unique();
             $table->string('device_type');
             $table->timestamps();
+
+            $table->index(['device_id', 'user_id']);
         });
     }
 

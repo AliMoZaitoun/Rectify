@@ -81,8 +81,9 @@ class ComplaintDAO
             ->paginate($perPage);
     }
 
-    public function update(Complaint $complaint, array $data): bool
+    public function update(Complaint $complaint, array $data)
     {
-        return $complaint->update($data);
+        $complaint->update($data);
+        return $complaint->refresh();
     }
 }

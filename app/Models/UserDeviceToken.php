@@ -6,7 +6,7 @@ use App\Enums\DeviceType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'fcm_token', 'device_type'])]
+#[Fillable(['user_id', 'fcm_token', 'device_type', 'device_id'])]
 class UserDeviceToken extends Model
 {
     protected $casts = [

@@ -16,7 +16,7 @@ class DeviceTokenService
         return $this->deviceTokenDAO->updateOrCreateToken($dto);
     }
 
-    public function removeToken(int $userId, string $fcmToken): bool
+    public function removeToken(?int $userId, string $fcmToken): bool
     {
         return $this->deviceTokenDAO->deleteToken($userId, $fcmToken);
     }
