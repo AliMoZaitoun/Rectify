@@ -29,14 +29,14 @@ class EscalateOverdueComplaintsJob implements ShouldQueue
         foreach ($overdueComplaints as $complaint) {
             $oldStatus = $complaint->status instanceof ComplaintStatus ? $complaint->status->value : $complaint->status;
 
-            $branchManagerId = $complaint->branch?->manager_id;
+            $branchManagerEmployeeId = $complaint->branch?->manager_id;
 
             $updateData = [
                 'status' => ComplaintStatus::ESCALATED->value,
             ];
 
-            if ($branchManagerId) {
-                $updateData['assigned_to_id'] = $branchManagerId;
+            if ($branchManagerEmployeeId) {
+                $updateData['assigned_to_id'] = $branchManagerEmployeeId;
             }
 
             $complaintDAO->update($complaint, $updateData);
@@ -45,8 +45,8 @@ class EscalateOverdueComplaintsJob implements ShouldQueue
                 complaintId: $complaint->id,
                 newStatus: ComplaintStatus::ESCALATED->value,
                 oldStatus: $oldStatus,
-                assignedToId: $branchManagerId,
-                changedByType: null, // System Action
+                assignedToId: $branchManagerEmployeeId,
+                changedByType: null,
                 changedById: null,
                 comment: __('messages.complaint.history.sla_escalated_internal'),
                 is_visible: false

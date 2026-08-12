@@ -21,7 +21,6 @@ class UserAndEmployeeSeeder extends Seeder
             return;
         }
 
-        // قائمة أسماء راكزة ومجهزة للمدراء والموظفين
         $managersList = [
             ['first_name' => 'أحمد', 'last_name' => 'العلي'],
             ['first_name' => 'خالد', 'last_name' => 'العمر'],
@@ -31,19 +30,16 @@ class UserAndEmployeeSeeder extends Seeder
         ];
 
         $staffList = [
-            // مجموعة للفرع الأول
             [
                 ['first_name' => 'سامر', 'last_name' => 'المصري', 'gender' => 'male'],
                 ['first_name' => 'رنا', 'last_name' => 'الحسن', 'gender' => 'female'],
                 ['first_name' => 'عمر', 'last_name' => 'النابلسي', 'gender' => 'male'],
             ],
-            // مجموعة للفرع الثاني
             [
                 ['first_name' => 'زياد', 'last_name' => 'الشامي', 'gender' => 'male'],
                 ['first_name' => 'نور', 'last_name' => 'الخطيب', 'gender' => 'female'],
                 ['first_name' => 'باسم', 'last_name' => 'الحداد', 'gender' => 'male'],
             ],
-            // مجموعة للفرع الثالث
             [
                 ['first_name' => 'كريم', 'last_name' => 'الفارس', 'gender' => 'male'],
                 ['first_name' => 'سارة', 'last_name' => 'النجار', 'gender' => 'female'],
@@ -53,7 +49,7 @@ class UserAndEmployeeSeeder extends Seeder
 
         foreach ($branches as $bIndex => $branch) {
 
-            // 1. اختيار اسم المدير أو توليد اسم راكز إن زادت الأفرع
+            // 1. اختيار اسم المدير أو توليد اسم إن زادت الأفرع
             $managerName = $managersList[$bIndex % count($managersList)];
 
             $managerUser = User::create([
@@ -70,6 +66,10 @@ class UserAndEmployeeSeeder extends Seeder
 
             $managerEmployee = Employee::create([
                 'user_id' => $managerUser->id,
+            ]);
+
+            $branch->update([
+                'manager_id' => $managerEmployee->id,
             ]);
 
             EmployeeBranch::create([
@@ -137,6 +137,7 @@ class UserAndEmployeeSeeder extends Seeder
                 'user_id' => $clientUser->id,
                 'points'  => $clientInfo['points'],
             ]);
+
             $clientUser->assignRole(['client']);
         }
     }

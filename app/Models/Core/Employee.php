@@ -33,4 +33,9 @@ class Employee extends Model
     {
         return $this->hasOne(EmployeeBranch::class)->whereNull('to_date');
     }
+
+    public function managedBranches()
+    {
+        return $this->hasMany(Branch::class, 'manager_id');
+    }
 }

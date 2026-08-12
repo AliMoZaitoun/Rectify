@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'description', 'location_id'])]
+#[Fillable(['name', 'description', 'manager_id', 'location_id'])]
 class Branch extends Model
 {
     use SoftDeletes, HasTranslations;
@@ -30,5 +30,10 @@ class Branch extends Model
     public function employees()
     {
         return $this->hasMany(EmployeeBranch::class);
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Employee::class);
     }
 }

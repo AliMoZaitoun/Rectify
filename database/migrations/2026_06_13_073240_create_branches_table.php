@@ -16,6 +16,11 @@ return new class extends Migration
             $table->json('name');
             $table->json('description')->nullable();
             $table->foreignId('location_id')->constrained();
+            $table->foreignId('manager_id')
+                ->nullable()
+                ->constrained('employees')
+                ->nullOnDelete();
+
             $table->softDeletes();
             $table->timestamps();
         });
