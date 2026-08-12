@@ -62,6 +62,9 @@ class DashboardComplaintResource extends JsonResource
             'histories'   => DashboardComplaintHistoryResource::collection($this->whenLoaded('histories')),
             'actions'     => ComplaintActionResource::collection($this->whenLoaded('actions')),
 
+            'children' => DashboardComplaintResource::collection($this->whenLoaded('children')),
+            'parent'   => new DashboardComplaintResource($this->whenLoaded('parent')),
+
             'ai' => [
                 'summary'            => $this->ai_summary,
                 'suggested_category' => $this->ai_suggested_category,

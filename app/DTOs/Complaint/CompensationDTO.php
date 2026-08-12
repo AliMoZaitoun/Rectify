@@ -14,7 +14,8 @@ class CompensationDTO
         public CompensationType $type,
         public float $amount,
         public ?string $couponCode,
-        public ?string $notes
+        public ?string $notes,
+        public ?bool $applyToChildren = false
     ) {}
 
     public static function fromRequest(
@@ -30,7 +31,8 @@ class CompensationDTO
             type: CompensationType::from($request->validated('type')),
             amount: (float) $request->validated('amount', 0),
             couponCode: $request->validated('coupon_code'),
-            notes: $request->validated('notes')
+            notes: $request->validated('notes'),
+            applyToChildren: $request->boolean('apply_to_children')
         );
     }
 }

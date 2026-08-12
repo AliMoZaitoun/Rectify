@@ -81,6 +81,13 @@ class Complaint extends Model
         return $this->hasMany(ComplaintHistory::class)->latest();
     }
 
+    public function clientHistories()
+    {
+        return $this->hasMany(ComplaintHistory::class)
+            ->where('is_visible', true)
+            ->latest();
+    }
+
     public function actions()
     {
         return $this->hasMany(ComplaintAction::class)->latest();

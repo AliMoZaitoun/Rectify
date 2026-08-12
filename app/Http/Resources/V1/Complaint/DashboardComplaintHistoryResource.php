@@ -17,6 +17,7 @@ class DashboardComplaintHistoryResource extends JsonResource
             'duration_in_hours' => (int) $this->duration_in_hours,
             'comment'           => $this->comment,
             'created_at'        => $this->created_at?->toIso8601String(),
+            'is_visible'        => $this->is_visible,
 
             'assigned_to' => new EmployeeDetailResource($this->whenLoaded('assignedTo')),
 

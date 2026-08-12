@@ -177,17 +177,15 @@ Route::prefix('complaint')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('reports', [ComplaintReportController::class, 'index']);
+
     Route::get('/', [DashboardComplaintController::class, 'index']);
     Route::get('/branch/{branchId}', [DashboardComplaintController::class, 'branchComplaints']);
     Route::get('/{id}', [DashboardComplaintController::class, 'show']);
 
     Route::put('/{id}/status', [DashboardComplaintController::class, 'changeStatus']);
     Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
-
-    Route::get('reports', [ComplaintReportController::class, 'index']);
-
     Route::post('{id}/merge', [DashboardComplaintController::class, 'mergeComplaints']);
-
     Route::post('{id}/unmerge', [DashboardComplaintController::class, 'unmergeComplaint']);
 });
 
@@ -211,4 +209,13 @@ Route::get('/run-seeder', function () {
         '--force' => true,
     ]);
     return 'Database has been refreshed and seeded!';
+});
+
+
+Route::get('/cron/escalate-complaints', function () {
+    app(\App\Jobs\EscalateOverdueComplaintsJob::class)->handle(
+        app(\App\DAO\Complaint\ComplaintDAO::class),
+        app(\App\DAO\Complaint\ComplaintHistoryDAO::class)
+    );
+    return response()->json(['status' => 'success']);
 });

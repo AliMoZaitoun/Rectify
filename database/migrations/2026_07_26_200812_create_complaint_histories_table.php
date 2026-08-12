@@ -22,6 +22,8 @@ return new class extends Migration
             $table->unsignedInteger('duration_in_hours')->nullable()->default(0);
 
             $table->text('comment')->nullable();
+
+            $table->boolean('is_visible')->default(true);
             $table->timestamps();
         });
     }

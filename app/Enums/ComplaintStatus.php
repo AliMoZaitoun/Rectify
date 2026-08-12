@@ -8,6 +8,7 @@ enum ComplaintStatus: string
     case IN_PROGRESS       = 'in_progress';
     case WAITING_DOCUMENTS = 'waiting_documents';
     case RESOLVED          = 'resolved';
+    case ESCALATED         = 'escalated';
     case CLOSED            = 'closed';
     case REJECTED          = 'rejected';
 

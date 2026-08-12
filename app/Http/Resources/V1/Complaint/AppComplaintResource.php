@@ -42,7 +42,7 @@ class AppComplaintResource extends JsonResource
             'category'       => new CategoryResource($this->whenLoaded('category')),
             'attachments'    => MediaResource::collection($this->whenLoaded('media')),
             'actions'        => ComplaintActionResource::collection($this->whenLoaded('actions')),
-            'histories'      => AppComplaintHistoryResource::collection($this->whenLoaded('histories')),
+            'histories'      => AppComplaintHistoryResource::collection($this->whenLoaded('clientHistories')),
 
             'can_be_rated'    => $isResolved && ! $hasRatingForCurrentResolution,
             'can_be_reopened' => $isResolved,

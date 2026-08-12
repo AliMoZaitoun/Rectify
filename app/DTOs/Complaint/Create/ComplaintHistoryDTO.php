@@ -13,6 +13,7 @@ class ComplaintHistoryDTO
         public ?int $changedById = null,
         public int $durationInHours = 0,
         public ?string $comment = null,
+        public bool $is_visible = true
     ) {}
 
     public static function fromArray(array $data): self
@@ -26,6 +27,7 @@ class ComplaintHistoryDTO
             changedById: $data['changed_by_id'] ?? null,
             durationInHours: $data['duration_in_hours'] ?? 0,
             comment: $data['comment'] ?? null,
+            is_visible: $data['is_visible'] ?? true
         );
     }
 
@@ -40,6 +42,7 @@ class ComplaintHistoryDTO
             'changed_by_id'     => $this->changedById,
             'duration_in_hours' => $this->durationInHours,
             'comment'           => $this->comment,
+            'is_visible'        => $this->is_visible
         ], fn($value) => !is_null($value));
     }
 }

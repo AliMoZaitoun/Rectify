@@ -14,6 +14,7 @@ class ComplaintReportDAO
     private function applyFilters(Builder $query, ComplaintReportFilterDTO $filter): Builder
     {
         return $query
+            ->whereNull('parent_id')
             ->when($filter->fromDate, fn($q) => $q->whereDate('created_at', '>=', $filter->fromDate))
             ->when($filter->toDate, fn($q) => $q->whereDate('created_at', '<=', $filter->toDate))
             ->when($filter->branchId, fn($q) => $q->where('branch_id', $filter->branchId));

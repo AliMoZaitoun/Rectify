@@ -10,6 +10,7 @@ use App\Enums\ComplaintStatus;
 use App\Enums\CompensationStatus;
 use App\Enums\CompensationType;
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
+use App\Exceptions\V1\Complaint\CannotModifyMergedComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
@@ -50,8 +51,11 @@ class CompensationService
                 throw new UnresolvedComplaintCompensationException();
             }
 
-            $isAnonymous = $complaint ? ((bool) $complaint->is_anonymous || is_null($dto->clientId)) : true;
+            if ($complaint->parent_id !== null) {
+                throw new CannotModifyMergedComplaintException();
+            }
 
+            $isAnonymous = (bool) $complaint->is_anonymous || is_null($dto->clientId);
             $isPointsForClient = ($dto->type === CompensationType::POINTS && $dto->clientId && $dto->amount > 0 && ! $isAnonymous);
 
             $status = $isPointsForClient ? CompensationStatus::GRANTED->value : CompensationStatus::PENDING->value;
@@ -73,6 +77,40 @@ class CompensationService
 
             if ($isPointsForClient) {
                 $this->clientDAO->incrementPoints($dto->clientId, (int) $dto->amount);
+            }
+
+            if ($dto->applyToChildren && $complaint->children()->exists()) {
+                foreach ($complaint->children as $child) {
+
+                    if ($this->compensationDAO->byComplaintId($child->id)) {
+                        continue;
+                    }
+
+                    $childClientId = $child->client_id;
+                    $isChildAnonymous = (bool) $child->is_anonymous || is_null($childClientId);
+                    $isChildPoints = ($dto->type === CompensationType::POINTS && $childClientId && $dto->amount > 0 && ! $isChildAnonymous);
+
+                    $childStatus = $isChildPoints ? CompensationStatus::GRANTED->value : CompensationStatus::PENDING->value;
+                    $childGrantedAt = $isChildPoints ? now() : null;
+
+                    $childCompensationData = [
+                        'complaint_id'   => $child->id,
+                        'client_id'      => $childClientId,
+                        'approved_by_id' => $dto->approvedById,
+                        'type'           => $dto->type->value,
+                        'amount'         => $dto->amount,
+                        'coupon_code'    => $dto->couponCode,
+                        'notes'          => $dto->notes,
+                        'status'         => $childStatus,
+                        'granted_at'     => $childGrantedAt,
+                    ];
+
+                    $this->compensationDAO->store($childCompensationData);
+
+                    if ($isChildPoints) {
+                        $this->clientDAO->incrementPoints($childClientId, (int) $dto->amount);
+                    }
+                }
             }
 
             return $compensation;

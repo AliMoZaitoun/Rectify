@@ -58,13 +58,18 @@ return [
 
         'report_generated_successfully' => 'Complaints and performance report generated successfully.',
 
+        'cannot_modify_merged_complaint' => 'Cannot modify a merged complaint. Please manage it via the parent complaint or unmerge it first.',
+        'cannot_merge_parent_complaint' => 'Cannot merge a complaint that already has child complaints attached to it.',
+
         'merged_successfully'   => 'Complaints merged successfully.',
         'unmerged_successfully' => 'Complaint unmerged successfully.',
 
         'history' => [
-            'merged'   => 'Merged under parent complaint #:code.',
-            'unmerged' => 'Unmerged from parent complaint #:code.',
-            'auto_resolved' => 'Auto-updated via parent complaint #:code.',
+            'merged_internal'   => 'This complaint was internally merged to link with a similar issue.',
+            'unmerged_internal' => 'This complaint was unmerged and reopened as an independent request.',
+            'auto_resolved'     => 'The issue has been resolved and its resolution documented by the specialized team.',
+
+            'sla_escalated_internal' => 'Complaint automatically escalated to branch manager due to SLA breach.',
         ],
     ],
 ];
