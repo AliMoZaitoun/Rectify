@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->uuid();
+            $table->uuid('uuid')->unique();
             $table->morphs('mediable');
             $table->string('path');
             $table->string('original_name');
-            $table->enum('type', ['image', 'video', '360_panorama', 'document']);
+            $table->string('type');
             $table->json('custom_properties')->nullable();
             $table->timestamp('recorded_at')->nullable();
             $table->timestamps();

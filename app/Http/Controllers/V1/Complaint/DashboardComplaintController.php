@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\ChangeComplaintStatusRequest;
 use App\Http\Requests\V1\Complaint\CreateComplaintActionRequest;
 use App\Http\Requests\V1\Complaint\FilterComplaintRequest;
+use App\Http\Requests\V1\Complaint\MergeComplaintsRequest;
 use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
 use App\Http\Resources\V1\Complaint\CompensationResource;
 use App\Http\Resources\V1\Complaint\DashboardComplaintResource;
@@ -84,5 +85,33 @@ class DashboardComplaintController extends Controller
         );
 
         return $this->successResponse($action, __('messages.complaint.action_added'));
+    }
+
+    public function mergeComplaints(MergeComplaintsRequest $request, int $id)
+    {
+        $parentComplaint = $this->service->findById($id);
+        $employee = Auth::user()?->employee;
+
+        $this->service->mergeComplaints(
+            parentComplaint: $parentComplaint,
+            childIds: $request->input('child_ids'),
+            employee: $employee
+        );
+
+        return $this->successResponse(
+            [],
+            __('messages.complaint.merged_successfully')
+        );
+    }
+
+    public function unmergeComplaint(int $id)
+    {
+        $employee = Auth::user()?->employee;
+        $this->service->unmergeComplaint($id, $employee);
+
+        return $this->successResponse(
+            [],
+            __('messages.complaint.unmerged_successfully')
+        );
     }
 }

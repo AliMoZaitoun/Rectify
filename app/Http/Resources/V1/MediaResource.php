@@ -5,12 +5,15 @@ namespace App\Http\Resources\V1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\MediaType;
 
 class MediaResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         $path = $this->path;
+        $type = $this->type instanceof MediaType ? $this->type->value : $this->type;
+
         return [
             'id'            => $this->id,
             'uuid'          => $this->uuid,
@@ -21,8 +24,8 @@ class MediaResource extends JsonResource
 
             'url'           => Storage::disk('s3')->url($this->path),
 
-            'path'          => $this->path,
-            'type'          => $this->type,
+            'path'          => $path,
+            'type'          => $type,
             'extension'     => pathinfo($path, PATHINFO_EXTENSION),
         ];
     }

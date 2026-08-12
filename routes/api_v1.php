@@ -185,6 +185,10 @@ Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(functi
     Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
 
     Route::get('reports', [ComplaintReportController::class, 'index']);
+
+    Route::post('{id}/merge', [DashboardComplaintController::class, 'mergeComplaints']);
+
+    Route::post('{id}/unmerge', [DashboardComplaintController::class, 'unmergeComplaint']);
 });
 
 Route::prefix('dashboard/compensations')->middleware(['auth:sanctum'])->group(function () {

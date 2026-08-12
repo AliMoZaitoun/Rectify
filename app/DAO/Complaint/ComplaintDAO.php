@@ -86,4 +86,11 @@ class ComplaintDAO
         $complaint->update($data);
         return $complaint->refresh();
     }
+
+    public function updateParentId(array $ids, int $parentId): bool
+    {
+        return Complaint::whereIn('id', $ids)->update([
+            'parent_id' => $parentId
+        ]);
+    }
 }

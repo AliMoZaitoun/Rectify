@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'client_id',
     'device_id',
+    'uuid',
     'tracking_code',
     'is_anonymous',
     'branch_id',

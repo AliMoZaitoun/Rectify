@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             $table->foreignId('client_id')->nullable()->constrained()->onDelete('set null');
 
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->onDelete('restrict');
 
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
 
             $table->string('status')->default('pending');
             $table->string('priority')->default('medium');

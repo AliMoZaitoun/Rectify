@@ -57,5 +57,14 @@ return [
         'reopened_successfully' => 'Complaint has been reopened successfully and will be reviewed.',
 
         'report_generated_successfully' => 'Complaints and performance report generated successfully.',
+
+        'merged_successfully'   => 'Complaints merged successfully.',
+        'unmerged_successfully' => 'Complaint unmerged successfully.',
+
+        'history' => [
+            'merged'   => 'Merged under parent complaint #:code.',
+            'unmerged' => 'Unmerged from parent complaint #:code.',
+            'auto_resolved' => 'Auto-updated via parent complaint #:code.',
+        ],
     ],
 ];

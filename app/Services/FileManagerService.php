@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\MediaType;
 use App\Exceptions\NotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +56,7 @@ class FileManagerService
             $finalType = $passedType ?: ($typeResolver ? $typeResolver($file) : $this->detectFileType($file));
 
             $storedRecords[] = $model->{$relationName}()->create([
-                'uuid'              => (string) Str::uuid(),
+                'uuid'              => $fileData['uuid'] ?? (string) Str::uuid(),
                 'path'              => $path,
                 'original_name'     => $file->getClientOriginalName(),
                 'type'              => $finalType,
@@ -82,13 +83,16 @@ class FileManagerService
 
     public function detectFileType($file, $passedType = null)
     {
-        if ($passedType === '360_panorama') {
-            return '360_panorama';
+        if ($passedType === MediaType::PANORAMA_360->value) {
+            return MediaType::PANORAMA_360->value;
         }
 
         $mime = $file->getMimeType();
-        if (str_contains($mime, 'image')) return 'image';
-        if (str_contains($mime, 'video')) return 'video';
-        return 'document';
+
+        if (str_contains($mime, 'image')) return MediaType::IMAGE->value;
+        if (str_contains($mime, 'video')) return MediaType::VIDEO->value;
+        if (str_contains($mime, 'audio')) return MediaType::AUDIO->value;
+
+        return MediaType::DOCUMENT->value;
     }
 }

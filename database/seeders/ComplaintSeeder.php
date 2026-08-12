@@ -24,6 +24,7 @@ class ComplaintSeeder extends Seeder
         Complaint::create([
             'client_id'      => $client?->id,
             'device_id'      => 'device-uuid-client-1111',
+            'uuid'           => (string) Str::uuid(),
             'branch_id'      => $branch->id,
             'category_id'    => $category->id,
             'title'          => 'تأخير في تقديم الخدمة',
@@ -38,6 +39,7 @@ class ComplaintSeeder extends Seeder
         Complaint::create([
             'client_id'      => $client?->id,
             'device_id'      => 'device-uuid-client-1111',
+            'uuid'           => (string) Str::uuid(),
             'branch_id'      => $branch->id,
             'category_id'    => $category->id,
             'title'          => 'شكوى مجهولة من عميل مسجل',
@@ -52,6 +54,7 @@ class ComplaintSeeder extends Seeder
         Complaint::create([
             'client_id'      => null,
             'device_id'      => 'device-guest-test-9999',
+            'uuid'           => (string) Str::uuid(),
             'branch_id'      => $branch->id,
             'category_id'    => $category->id,
             'title'          => 'شكوى من زائر مجهول',

@@ -140,12 +140,7 @@ class ComplaintService
 
         $newStatusValue = $dto->status->value;
 
-        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $dto, &$oldStatus, &$newStatusValue) {
-            $oldStatus = $complaint->status instanceof ComplaintStatus
-                ? $complaint->status->value
-                : $complaint->status;
-
-            $newStatusValue = $dto->status->value;
+        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $dto, $oldStatusValue, $newStatusValue) {
 
             $lastHistory = $complaint->histories()->first();
             $durationInHours = $lastHistory
@@ -165,7 +160,7 @@ class ComplaintService
             $historyDto = new ComplaintHistoryDTO(
                 complaintId: $complaint->id,
                 newStatus: $newStatusValue,
-                oldStatus: $oldStatus,
+                oldStatus: $oldStatusValue,
                 assignedToId: $dto->assignedToId ?? $complaint->assigned_to_id,
                 changedByType: $dto->changedByType,
                 changedById: $dto->changedById,
@@ -175,11 +170,35 @@ class ComplaintService
 
             $this->historyDAO->store($historyDto);
 
+            if ($complaint->children()->exists()) {
+                foreach ($complaint->children as $child) {
+                    $childOldStatus = $child->status instanceof ComplaintStatus ? $child->status->value : (string) $child->status;
+
+                    $childUpdateData = ['status' => $newStatusValue];
+                    if ($newStatusValue === ComplaintStatus::RESOLVED->value) {
+                        $childUpdateData['resolved_at'] = now();
+                    }
+
+                    $this->complaintDAO->update($child, $childUpdateData);
+
+                    $this->historyDAO->store(new ComplaintHistoryDTO(
+                        complaintId: $child->id,
+                        newStatus: $newStatusValue,
+                        oldStatus: $childOldStatus,
+                        changedByType: $dto->changedByType,
+                        changedById: $dto->changedById,
+                        comment: "Auto-updated via parent complaint #{$complaint->tracking_code}"
+                    ));
+
+                    ComplaintStatusUpdated::dispatch($child, $childOldStatus);
+                }
+            }
+
             return $complaint->fresh(['histories', 'assignedTo', 'client.user']);
         });
 
-        if ($oldStatus !== $newStatusValue) {
-            ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatus);
+        if ($oldStatusValue !== $newStatusValue) {
+            ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatusValue);
         }
 
         return $updatedComplaint;
@@ -377,6 +396,50 @@ class ComplaintService
             $this->historyDAO->store($historyDto);
 
             return $complaint->fresh(['branch', 'category', 'media', 'actions', 'histories', 'compensation', 'latestRating']);
+        });
+    }
+
+    public function mergeComplaints(Complaint $parentComplaint, array $childIds, $employee = null): void
+    {
+        $this->transaction->execute(function () use ($parentComplaint, $childIds, $employee) {
+            $this->complaintDAO->updateParentId($childIds, $parentComplaint->id);
+
+            foreach ($childIds as $childId) {
+                $child = $this->complaintDAO->byId($childId);
+                $currentStatus = $child?->status instanceof ComplaintStatus ? $child->status->value : $child?->status;
+
+                $this->historyDAO->store(new ComplaintHistoryDTO(
+                    complaintId: $childId,
+                    newStatus: $currentStatus,
+                    oldStatus: $currentStatus,
+                    changedByType: $employee ? get_class($employee) : null,
+                    changedById: $employee?->id,
+                    comment: __('messages.complaint.history.merged', ['code' => $parentComplaint->tracking_code])
+                ));
+            }
+        });
+    }
+
+    public function unmergeComplaint(int $childId, $employee = null): Complaint
+    {
+        $childComplaint = $this->findById($childId);
+
+        return $this->transaction->execute(function () use ($childComplaint, $employee) {
+            $parentCode = $childComplaint->parent?->tracking_code ?? 'N/A';
+
+            $this->complaintDAO->update($childComplaint, [
+                'parent_id' => null
+            ]);
+
+            $this->historyDAO->store(new ComplaintHistoryDTO(
+                complaintId: $childComplaint->id,
+                newStatus: $childComplaint->status instanceof ComplaintStatus ? $childComplaint->status->value : $childComplaint->status,
+                changedByType: $employee ? get_class($employee) : null,
+                changedById: $employee?->id,
+                comment: "Unmerged from parent complaint #{$parentCode}"
+            ));
+
+            return $childComplaint->fresh();
         });
     }
 }
