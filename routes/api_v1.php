@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\LoginController;
 use App\Http\Controllers\V1\Auth\PasswordManagementController;
 use App\Http\Controllers\V1\Auth\VerificationController;
+use App\Http\Controllers\V1\Client\ChurnRiskController;
 use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
 use App\Http\Controllers\V1\Complaint\AiAssistantController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\V1\Complaint\AppComplaintController;
 use App\Http\Controllers\V1\Complaint\Compensation\CompensationController;
 use App\Http\Controllers\V1\Complaint\ComplaintReportController;
 use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
+use App\Http\Controllers\V1\Core\ActivityLogController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
 use App\Http\Controllers\V1\Core\SettingController;
@@ -187,6 +189,8 @@ Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(functi
     Route::get('/branch/{branchId}', [DashboardComplaintController::class, 'branchComplaints']);
     Route::get('/{id}', [DashboardComplaintController::class, 'show']);
 
+    Route::get('clientComplaints/{clientId}', [DashboardComplaintController::class, 'clientComplaints']);
+
     Route::put('/{id}/status', [DashboardComplaintController::class, 'changeStatus']);
     Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
     Route::post('{id}/merge', [DashboardComplaintController::class, 'mergeComplaints']);
@@ -214,6 +218,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/', [CompensationController::class, 'store']);
         Route::get('/', [CompensationController::class, 'showByComplaint']);
     });
+
+    Route::get('dashboard/clients/churn-alerts', [ChurnRiskController::class, 'index']);
+
+    Route::get('dashboard/activity-logs', [ActivityLogController::class, 'index']);
 });
 
 Route::prefix('settings/ai-policy')->middleware(['auth:sanctum'])->group(function () {

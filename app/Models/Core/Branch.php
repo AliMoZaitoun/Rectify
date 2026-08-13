@@ -6,6 +6,8 @@ use App\Models\Location;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable([
@@ -18,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
 ])]
 class Branch extends Model
 {
-    use SoftDeletes, HasTranslations;
+    use SoftDeletes, HasTranslations, LogsActivity;
 
     public $translatable = ['name', 'description'];
     protected function casts(): array
@@ -44,5 +46,13 @@ class Branch extends Model
     public function manager()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 }

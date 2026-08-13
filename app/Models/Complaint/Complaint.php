@@ -10,6 +10,8 @@ use App\Models\Core\Employee;
 use App\Models\Media;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
     'client_id',
@@ -32,6 +34,8 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class Complaint extends Model
 {
+    use LogsActivity;
+
     protected $casts = [
         'sla_due_at' => 'datetime',
         'resolved_at' => 'datetime',
@@ -106,5 +110,13 @@ class Complaint extends Model
     public function latestRating()
     {
         return $this->hasOne(ComplaintRating::class)->latestOfMany();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 }

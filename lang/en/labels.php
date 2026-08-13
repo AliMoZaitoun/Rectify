@@ -10,6 +10,7 @@ return [
         'pending'  => 'Pending',
         'granted'  => 'Granted',
         'rejected' => 'Rejected',
+        'pending_approval'  => 'Pending approval'
     ],
     'complaint_priority' => [
         'low'    => 'Low',

@@ -23,9 +23,9 @@ class ClientService
         private TransactionService $transaction
     ) {}
 
-    public function index()
+    public function index(array $relations = [], int $perPage = 15)
     {
-        return $this->clientDAO->index();
+        return $this->clientDAO->index($relations, $perPage);
     }
 
     public function store(CreateUserDTO $userDTO, CreateClientDTO $clientDTO)

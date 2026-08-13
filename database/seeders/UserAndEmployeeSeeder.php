@@ -9,6 +9,7 @@ use App\Models\Core\EmployeeBranch;
 use App\Models\Location;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class UserAndEmployeeSeeder extends Seeder
 {
@@ -16,11 +17,13 @@ class UserAndEmployeeSeeder extends Seeder
     {
         $defaultLocationId = Location::first()?->id ?? 1;
         $branches = Branch::all();
+        $faker = Faker::create('ar_SA'); // لتوليد أسماء عربية
 
         if ($branches->isEmpty()) {
             return;
         }
 
+        // --- الموظفون والمدراء (كما هم في الكود الأساسي) ---
         $managersList = [
             ['first_name' => 'أحمد', 'last_name' => 'العلي'],
             ['first_name' => 'خالد', 'last_name' => 'العمر'],
@@ -48,8 +51,6 @@ class UserAndEmployeeSeeder extends Seeder
         ];
 
         foreach ($branches as $bIndex => $branch) {
-
-            // 1. اختيار اسم المدير أو توليد اسم إن زادت الأفرع
             $managerName = $managersList[$bIndex % count($managersList)];
 
             $managerUser = User::create([
@@ -64,13 +65,8 @@ class UserAndEmployeeSeeder extends Seeder
                 'email_verified_at' => now(),
             ]);
 
-            $managerEmployee = Employee::create([
-                'user_id' => $managerUser->id,
-            ]);
-
-            $branch->update([
-                'manager_id' => $managerEmployee->id,
-            ]);
+            $managerEmployee = Employee::create(['user_id' => $managerUser->id]);
+            $branch->update(['manager_id' => $managerEmployee->id]);
 
             EmployeeBranch::create([
                 'employee_id' => $managerEmployee->id,
@@ -81,12 +77,10 @@ class UserAndEmployeeSeeder extends Seeder
             ]);
 
             $managerUser->assignRole('manager');
-
             $currentBranchStaff = $staffList[$bIndex % count($staffList)];
 
             foreach ($currentBranchStaff as $sIndex => $staffData) {
                 $staffNumber = $sIndex + 1;
-
                 $staffUser = User::create([
                     'first_name'        => $staffData['first_name'],
                     'last_name'         => $staffData['last_name'],
@@ -99,9 +93,7 @@ class UserAndEmployeeSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]);
 
-                $staffEmployee = Employee::create([
-                    'user_id' => $staffUser->id,
-                ]);
+                $staffEmployee = Employee::create(['user_id' => $staffUser->id]);
 
                 EmployeeBranch::create([
                     'employee_id' => $staffEmployee->id,
@@ -115,19 +107,15 @@ class UserAndEmployeeSeeder extends Seeder
             }
         }
 
-        $clientsData = [
-            ['first_name' => 'عبد الله', 'last_name' => 'الرفاعي', 'email' => 'client1@gmail.com', 'points' => 150, 'gender' => 'male'],
-            ['first_name' => 'مريم', 'last_name' => 'المنصوري', 'email' => 'client2@gmail.com', 'points' => 320, 'gender' => 'female'],
-        ];
-
-        foreach ($clientsData as $clientInfo) {
+        for ($i = 1; $i <= 20; $i++) {
+            $gender = $faker->randomElement(['male', 'female']);
             $clientUser = User::create([
-                'first_name'        => $clientInfo['first_name'],
-                'last_name'         => $clientInfo['last_name'],
-                'email'             => $clientInfo['email'],
-                'phone'             => '09555' . rand(10000, 99999),
+                'first_name'        => $faker->firstName($gender),
+                'last_name'         => $faker->lastName,
+                'email'             => "client{$i}@gmail.com",
+                'phone'             => $faker->unique()->numerify('095#######'),
                 'location_id'       => $defaultLocationId,
-                'gender'            => $clientInfo['gender'],
+                'gender'            => $gender,
                 'type'              => 'client',
                 'password'          => bcrypt('password'),
                 'email_verified_at' => now(),
@@ -135,7 +123,7 @@ class UserAndEmployeeSeeder extends Seeder
 
             Client::create([
                 'user_id' => $clientUser->id,
-                'points'  => $clientInfo['points'],
+                'points'  => $faker->numberBetween(50, 1000),
             ]);
 
             $clientUser->assignRole(['client']);

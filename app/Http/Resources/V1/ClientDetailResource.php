@@ -19,11 +19,15 @@ class ClientDetailResource extends JsonResource
             : $this->resource->user;
 
         return [
-            'account' => new UserResource($user),
-            'additional_info' => [
-                'client_id'     => $client->id,
-                'points'        => $client->points,
+            'id'               => $client->id,
+            'account'          => new UserResource($user),
+            'additional_info'  => [
+                'client_id' => $client->id,
+                'points'    => $client->points,
             ],
+            'complaints_count' => $client->complaints_count ?? $client->complaints()->count(),
+            'complaints'       => $client->relationLoaded('complaints') ? $client->complaints : null,
+            'compensations'    => $client->relationLoaded('compensations') ? $client->compensations : null,
         ];
     }
 }

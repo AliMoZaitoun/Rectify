@@ -21,9 +21,10 @@ class ClientController extends Controller
         private ClientService $clientService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $clients = $this->clientService->index();
+        $perPage = (int) $request->input('perPage');
+        $clients = $this->clientService->index(perPage: $perPage);
         return $this->successUserCollection($clients);
     }
 

@@ -8,9 +8,16 @@ use App\Models\Client;
 
 class ClientDAO
 {
-    public function index()
+    public function index(array $relations = [], int $perPage = 15)
     {
-        return Client::all();
+        $defaultRelations = ['user'];
+        $allRelations = array_merge($defaultRelations, $relations);
+
+        return Client::query()
+            ->with($allRelations)
+            ->withCount('complaints')
+            ->latest()
+            ->paginate($perPage);
     }
 
     public function store(CreateClientDTO $clientDTO)
@@ -45,5 +52,29 @@ class ClientDAO
     public function decrementPoints(int $clientId, int $points): bool
     {
         return (bool) Client::where('id', $clientId)->decrement('points', $points);
+    }
+
+    public function getAtRiskClients(string $sinceDate)
+    {
+        return Client::with(['user'])
+            ->withCount([
+                'complaints as recent_complaints_count' => function ($query) use ($sinceDate) {
+                    $query->where('created_at', '>=', $sinceDate);
+                },
+                'compensations as rejected_compensations_count' => function ($query) use ($sinceDate) {
+                    $query->where('status', 'rejected')
+                        ->where('created_at', '>=', $sinceDate);
+                }
+            ])
+            ->where(function ($query) use ($sinceDate) {
+                $query->whereHas('complaints', function ($q) use ($sinceDate) {
+                    $q->where('created_at', '>=', $sinceDate);
+                }, '>=', 3)
+                    ->orWhereHas('compensations', function ($q) use ($sinceDate) {
+                        $q->where('status', 'rejected')
+                            ->where('created_at', '>=', $sinceDate);
+                    }, '>', 0);
+            })
+            ->get();
     }
 }

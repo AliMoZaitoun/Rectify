@@ -10,6 +10,8 @@ return [
         'pending'  => 'قيد الانتظار',
         'granted'  => 'تم الصرف',
         'rejected' => 'مرفوض',
+        'pending_approval'  => 'بانتظار الموافقة'
+
     ],
     'complaint_priority' => [
         'low'    => 'منخفضة',

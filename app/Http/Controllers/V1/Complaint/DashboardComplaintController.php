@@ -60,6 +60,20 @@ class DashboardComplaintController extends Controller
         return $this->successCollection($complaints, DashboardComplaintResource::class);
     }
 
+    public function clientComplaints(int $clientId, FilterComplaintRequest $request)
+    {
+        $perPage = $request->input('per_page', 15);
+
+        $complaints = $this->service->clientComplaints(
+            $clientId,
+            null,
+            perPage: (int) $perPage
+        );
+
+        return $this->successCollection($complaints, DashboardComplaintResource::class);
+    }
+
+
     public function changeStatus(ChangeComplaintStatusRequest $request, int $id)
     {
         $complaint = $this->service->findById($id);
