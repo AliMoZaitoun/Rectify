@@ -52,13 +52,13 @@ class ClientController extends Controller
         return $this->useResource($client, ClientDetailResource::class);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, int $id)
     {
         $userDTO = UpdateUserDTO::fromRequest($request->all());
 
         $clientDTO = UpdateClientDTO::fromRequest($request->all());
 
-        $client = $this->clientService->update($request->user()->client->id, $userDTO, $clientDTO);
+        $client = $this->clientService->update($id, $userDTO, $clientDTO);
 
         return $this->useResource($client, ClientDetailResource::class, __('messages.common.updated'));
     }

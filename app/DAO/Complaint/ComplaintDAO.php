@@ -9,11 +9,12 @@ class ComplaintDAO
 {
     public function paginate(array $filters = [], array $relations = [], int $perPage = 15)
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children.client', 'children.category', 'children.branch'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
             ->with($allRelations)
+            ->whereNull('parent_id')
             ->when(! empty($filters['status']), fn($q) => $q->where('status', $filters['status']))
             ->when(! empty($filters['priority']), fn($q) => $q->where('priority', $filters['priority']))
             ->when(! empty($filters['category_id']), fn($q) => $q->where('category_id', $filters['category_id']))
@@ -68,12 +69,13 @@ class ComplaintDAO
 
     public function byBranch(int $branchId, array $filters = [], int $perPage = 15, array $relations = []): LengthAwarePaginator
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children.client', 'children.category', 'children.branch'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
             ->where('branch_id', $branchId)
             ->with($allRelations)
+            ->whereNull('parent_id')
             ->when(! empty($filters['status']), fn($q) => $q->where('status', $filters['status']))
             ->when(! empty($filters['priority']), fn($q) => $q->where('priority', $filters['priority']))
             ->when(! empty($filters['category_id']), fn($q) => $q->where('category_id', $filters['category_id']))

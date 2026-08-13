@@ -72,4 +72,9 @@ return [
             'sla_escalated_internal' => 'Complaint automatically escalated to branch manager due to SLA breach.',
         ],
     ],
+    'ai' => [
+        'disabled' => 'The AI assistant is disabled or not configured by management.',
+        'generation_failed' => 'An error occurred while generating the AI response. Please try again later.',
+        'generated_successfully' => 'Response generated successfully.',
+    ],
 ];

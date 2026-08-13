@@ -24,5 +24,13 @@ return [
         'resolved'          => 'محلولة',
         'closed'            => 'مغلقة',
         'rejected'          => 'مرفوضة',
+        'escalated'         => 'مُصَعَّدة',
+    ],
+
+    'ai_tone' => [
+        'professional' => 'رسمية واحترافية',
+        'empathetic'   => 'متعاطفة ومتفهمة',
+        'strict'       => 'حازمة ومباشرة',
+        'friendly'     => 'ودودة ومريحة',
     ],
 ];

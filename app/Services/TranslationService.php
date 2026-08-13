@@ -2,42 +2,27 @@
 
 namespace App\Services;
 
-use Gemini;
+use App\Services\AI\GeminiCoreService;
 
 class TranslationService
 {
-    protected $client;
-
-    public function __construct()
-    {
-        $apiKey = config('services.gemini.key');
-        $this->client = Gemini::client($apiKey);
-    }
+    public function __construct(
+        private readonly GeminiCoreService $geminiCore
+    ) {}
 
     public function translateAll(string $text): array
     {
-        $modelName = 'gemini-2.5-flash';
-
-        $result = $this->client
-            ->generativeModel($modelName)
-            ->generateContent($this->buildPrompt($text));
-
-        $aiText = $result->text();
-        $cleanJson = preg_replace('/^```json\s*|\s*```$/i', '', trim($aiText));
-
-        return json_decode($cleanJson, true) ?? ['ar' => $text];
-    }
-
-    private function buildPrompt(string $text): string
-    {
         $targetLanguages = ['ar', 'en'];
+        $langs = implode(', ', $targetLanguages);
 
-        $prompt = "You are an expert translator. 
-                   Translate the following text into these languages: " . implode(', ', $targetLanguages) . ". 
-                   Respond ONLY with a valid JSON object where keys are the language codes and values are the translations.
-                   Do not include any markdown formatting or markdown code blocks (like ```json).
+        $prompt = "You are an expert translator. Translate the following text into these languages: {$langs}. 
+                   Format your response EXACTLY as a JSON object where keys are the language codes and values are the translations.
                    Text to translate: \"{$text}\"";
 
-        return $prompt;
+        try {
+            return $this->geminiCore->generateJson($prompt);
+        } catch (\Exception $e) {
+            return ['ar' => $text, 'en' => $text];
+        }
     }
 }

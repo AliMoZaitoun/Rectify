@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\AI\AiPolicyController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\LoginController;
 use App\Http\Controllers\V1\Auth\PasswordManagementController;
@@ -59,7 +60,7 @@ Route::get('testNot/{client_id}', [NotificationController::class, 'test']);
 Route::prefix('client')->group(function () {
     Route::get('', [ClientController::class, 'index']);
     Route::post('', [ClientController::class, 'store']);
-    Route::put('', [ClientController::class, 'update'])->middleware('auth:sanctum');
+    Route::put('{id}', [ClientController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('{id}', [ClientController::class, 'destroy'])->middleware('auth:sanctum');
     Route::get('profile', [ClientController::class, 'profile'])->middleware('auth:sanctum');
 
@@ -194,6 +195,11 @@ Route::prefix('dashboard/compensations')->middleware(['auth:sanctum'])->group(fu
     Route::post('/complaint/{complaintId}', [CompensationController::class, 'store']);
     Route::get('/complaint/{complaintId}', [CompensationController::class, 'showByComplaint']);
     Route::put('/{id}/status', [CompensationController::class, 'updateStatus']);
+});
+
+Route::prefix('settings/ai-policy')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [AiPolicyController::class, 'show']);
+    Route::put('/', [AiPolicyController::class, 'update']);
 });
 
 /*

@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\V1\AI\AiAssistantDisabledException;
+use App\Exceptions\V1\AI\AiResponseGenerationException;
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
@@ -117,6 +119,14 @@ class Handler
 
         $exceptions->render(function (CannotReopenComplaintException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (AiAssistantDisabledException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 403);
+        });
+
+        $exceptions->render(function (AiResponseGenerationException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         });
     }
 }

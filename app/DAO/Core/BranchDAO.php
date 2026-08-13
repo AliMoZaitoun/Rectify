@@ -12,7 +12,7 @@ class BranchDAO
 
     public function index()
     {
-        return Branch::with(['employees', 'employees.employee'])->get();
+        return Branch::with(['employees', 'employees.employee', 'location'])->get();
     }
 
     public function store(array $data)

@@ -24,5 +24,13 @@ return [
         'resolved'          => 'Resolved',
         'closed'            => 'Closed',
         'rejected'          => 'Rejected',
+        'escalated'         => 'Escalated'
+    ],
+
+    'ai_tone' => [
+        'professional' => 'Professional & Formal',
+        'empathetic'   => 'Empathetic & Understanding',
+        'strict'       => 'Strict & Direct',
+        'friendly'     => 'Friendly & Casual',
     ],
 ];
