@@ -76,5 +76,13 @@ return [
         'disabled' => 'The AI assistant is disabled or not configured by management.',
         'generation_failed' => 'An error occurred while generating the AI response. Please try again later.',
         'generated_successfully' => 'Response generated successfully.',
+        'connection_failed' => 'Failed to connect to the AI service. Please check your network connection or try again later.',
+        'parsing_failed' => 'An unexpected error occurred while parsing the AI output. Please try again.',
+
+        'no_complaints_for_report' => 'No complaints found matching the criteria for analysis.',
+        'report_generated'         => 'Institutional analysis report generated successfully.',
+        'reports_retrieved' => 'Reports retrieved successfully.',
+        'report_retrieved'  => 'Report details retrieved successfully.',
+        'report_not_found'  => 'The requested report was not found.',
     ],
 ];

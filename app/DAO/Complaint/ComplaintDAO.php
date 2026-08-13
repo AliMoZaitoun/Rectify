@@ -95,4 +95,35 @@ class ComplaintDAO
             'parent_id' => $parentId
         ]);
     }
+
+    public function getFilteredForAiReport(array $filters)
+    {
+        $query = Complaint::with(['category', 'branch'])->select([
+            'id',
+            'category_id',
+            'branch_id',
+            'title',
+            'description',
+            'status',
+            'created_at'
+        ]);
+
+        if (!empty($filters['complaint_ids'])) {
+            $query->whereIn('id', $filters['complaint_ids']);
+        }
+
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        if (!empty($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+
+        return $query->get();
+    }
 }

@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\V1\AI\AiPolicyController;
+use App\Http\Controllers\V1\AI\AiReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\LoginController;
 use App\Http\Controllers\V1\Auth\PasswordManagementController;
 use App\Http\Controllers\V1\Auth\VerificationController;
 use App\Http\Controllers\V1\Core\BranchController;
 use App\Http\Controllers\V1\ClientController;
+use App\Http\Controllers\V1\Complaint\AiAssistantController;
 use App\Http\Controllers\V1\Complaint\CategoryController;
 use App\Http\Controllers\V1\Complaint\AppComplaintController;
 use App\Http\Controllers\V1\Complaint\Compensation\CompensationController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\V1\Complaint\ComplaintReportController;
 use App\Http\Controllers\V1\Complaint\DashboardComplaintController;
 use App\Http\Controllers\V1\Core\EmployeeController;
 use App\Http\Controllers\V1\Core\EmployeeBranchController;
+use App\Http\Controllers\V1\Core\SettingController;
 use App\Http\Controllers\V1\DeviceTokenController;
 use App\Http\Controllers\V1\LocationController;
 use App\Http\Controllers\V1\NotificationController;
@@ -188,18 +191,40 @@ Route::prefix('dashboard/complaint')->middleware(['auth:sanctum'])->group(functi
     Route::post('/{id}/actions', [DashboardComplaintController::class, 'employeeAction']);
     Route::post('{id}/merge', [DashboardComplaintController::class, 'mergeComplaints']);
     Route::post('{id}/unmerge', [DashboardComplaintController::class, 'unmergeComplaint']);
+
+    Route::post('{id}/suggest-reply', [AiAssistantController::class, 'suggestReply']);
 });
 
-Route::prefix('dashboard/compensations')->middleware(['auth:sanctum'])->group(function () {
-    Route::get('/', [CompensationController::class, 'index']);
-    Route::post('/complaint/{complaintId}', [CompensationController::class, 'store']);
-    Route::get('/complaint/{complaintId}', [CompensationController::class, 'showByComplaint']);
-    Route::put('/{id}/status', [CompensationController::class, 'updateStatus']);
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::prefix('settings')->group(function () {
+        Route::get('compensation-limits', [SettingController::class, 'getCompensationLimits']);
+        Route::put('compensation-limits', [SettingController::class, 'updateCompensationLimits']);
+    });
+
+    Route::prefix('compensations')->group(function () {
+        Route::get('/', [CompensationController::class, 'index']);
+
+        Route::prefix('{compensation}')->group(function () {
+            Route::patch('status', [CompensationController::class, 'updateStatus']);
+        });
+    });
+
+    Route::prefix('complaints/{complaint}/compensations')->group(function () {
+        Route::post('/', [CompensationController::class, 'store']);
+        Route::get('/', [CompensationController::class, 'showByComplaint']);
+    });
 });
 
 Route::prefix('settings/ai-policy')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [AiPolicyController::class, 'show']);
     Route::put('/', [AiPolicyController::class, 'update']);
+});
+
+Route::prefix('dashboard/ai/reports')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [AiReportController::class, 'index']);
+    Route::get('{id}', [AiReportController::class, 'show']);
+    Route::post('generate', [AiReportController::class, 'generate']);
 });
 
 /*

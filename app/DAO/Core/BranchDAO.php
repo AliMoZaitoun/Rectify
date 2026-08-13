@@ -22,7 +22,7 @@ class BranchDAO
 
     public function show(int $id)
     {
-        return Branch::where('id', $id)->with('employees')->first();
+        return Branch::where('id', $id)->with(['employees', 'location'])->first();
     }
 
     public function update(int $id, array $data)

@@ -8,7 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'description', 'manager_id', 'location_id'])]
+#[Fillable([
+    'name',
+    'description',
+    'monthly_amount_budget',
+    'monthly_points_budget',
+    'manager_id',
+    'location_id'
+])]
 class Branch extends Model
 {
     use SoftDeletes, HasTranslations;
@@ -19,6 +26,8 @@ class Branch extends Model
         return [
             'name' => 'array',
             'description' => 'array',
+            'monthly_amount_budget' => 'decimal:2',
+            'monthly_points_budget' => 'integer',
         ];
     }
 

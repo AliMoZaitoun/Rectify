@@ -4,7 +4,6 @@ namespace App\DAO\Client;
 
 use App\DTOs\Client\Update\UpdateClientDTO;
 use App\DTOs\Client\Create\CreateClientDTO;
-use App\Exceptions\NotFoundException;
 use App\Models\Client;
 
 class ClientDAO
@@ -41,5 +40,10 @@ class ClientDAO
     public function incrementPoints(int $clientId, int $points): bool
     {
         return (bool) Client::where('id', $clientId)->increment('points', $points);
+    }
+
+    public function decrementPoints(int $clientId, int $points): bool
+    {
+        return (bool) Client::where('id', $clientId)->decrement('points', $points);
     }
 }

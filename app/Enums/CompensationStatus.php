@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum CompensationStatus: string
 {
+    case PENDING_APPROVAL = 'pending_approval';
     case PENDING  = 'pending';
     case GRANTED  = 'granted';
     case REJECTED = 'rejected';

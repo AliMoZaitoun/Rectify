@@ -6,6 +6,7 @@ use App\Enums\CompensationStatus;
 use App\Enums\CompensationType;
 use App\Models\Client;
 use App\Models\Core\Employee;
+use App\Models\Core\Branch;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'complaint_id',
+    'branch_id',
     'client_id',
     'approved_by_id',
     'type',
@@ -38,6 +40,11 @@ class ComplaintCompensation extends Model
     public function complaint(): BelongsTo
     {
         return $this->belongsTo(Complaint::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function client(): BelongsTo

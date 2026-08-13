@@ -2,6 +2,8 @@
 
 namespace App\Services\AI;
 
+use App\Exceptions\V1\AI\AiConnectionException;
+use App\Exceptions\V1\AI\AiParsingException;
 use Gemini;
 use Illuminate\Support\Facades\Log;
 
@@ -26,7 +28,8 @@ class GeminiCoreService
             return $result->text();
         } catch (\Exception $e) {
             Log::error('Gemini API Error: ' . $e->getMessage());
-            throw new \Exception('فشل الاتصال بخدمة الذكاء الاصطناعي.');
+
+            throw new AiConnectionException();
         }
     }
 
@@ -36,14 +39,14 @@ class GeminiCoreService
 
         $aiText = $this->generateText($prompt, $modelName);
 
-        // تنظيف الـ Markdown في حال قام الموديل بإضافته رغم التعليمات
         $cleanJson = preg_replace('/^```json\s*|\s*```$/i', '', trim($aiText));
 
         $decoded = json_decode($cleanJson, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             Log::error('Gemini JSON Parse Error: ' . json_last_error_msg() . ' | Raw Output: ' . $aiText);
-            throw new \Exception('فشل في تحليل مخرجات الذكاء الاصطناعي.');
+
+            throw new AiParsingException();
         }
 
         return $decoded;

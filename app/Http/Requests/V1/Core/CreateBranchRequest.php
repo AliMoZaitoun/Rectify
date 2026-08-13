@@ -15,9 +15,11 @@ class CreateBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'location_id'   => 'required|exists:locations,id'
+            'name'                  => 'required|string',
+            'description'           => 'nullable|string',
+            'monthly_amount_budget' => ['nullable', 'numeric', 'min:0'],
+            'monthly_points_budget' => ['nullable', 'integer', 'min:0'],
+            'location_id'           => 'required|exists:locations,id'
         ];
     }
 }

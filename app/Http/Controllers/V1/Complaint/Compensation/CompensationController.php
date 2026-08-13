@@ -6,7 +6,6 @@ use App\DTOs\Complaint\CompensationDTO;
 use App\Enums\CompensationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
-use App\Http\Resources\V1\Compensation\AppCompensationResource;
 use App\Http\Resources\V1\Compensation\DashboardCompensationResource;
 use App\Services\Complaint\CompensationService;
 use App\Services\Complaint\ComplaintService;
@@ -25,8 +24,23 @@ class CompensationController extends Controller
 
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $filters = $request->only(['type', 'status', 'branch_id']);
+
+        if ($user->hasRole('manager')) {
+            $filters['branch_id'] = $user->employee?->branch_id;
+
+            if (isset($filters['status']) && $filters['status'] === CompensationStatus::PENDING_APPROVAL->value) {
+                $filters['requested_by_role'] = 'staff';
+            }
+        } elseif ($user->hasRole('admin')) {
+            if (isset($filters['status']) && $filters['status'] === CompensationStatus::PENDING_APPROVAL->value) {
+                $filters['requested_by_role'] = 'manager';
+            }
+        }
+
         $compensations = $this->compensationService->getAll(
-            filters: $request->only(['type', 'status']),
+            filters: $filters,
             perPage: $request->integer('per_page', 15)
         );
 

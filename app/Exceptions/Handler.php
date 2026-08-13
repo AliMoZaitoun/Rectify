@@ -4,6 +4,10 @@ namespace App\Exceptions;
 
 use App\Exceptions\V1\AI\AiAssistantDisabledException;
 use App\Exceptions\V1\AI\AiResponseGenerationException;
+use App\Exceptions\V1\AI\AiConnectionException;
+use App\Exceptions\V1\AI\AiParsingException;
+use App\Exceptions\V1\AI\AiReportNotFoundException;
+use App\Exceptions\V1\AI\NoComplaintsFoundForAnalysisException;
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
@@ -121,12 +125,30 @@ class Handler
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
         });
 
+        # AI 
+
         $exceptions->render(function (AiAssistantDisabledException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 403);
         });
 
         $exceptions->render(function (AiResponseGenerationException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+        });
+
+        $exceptions->render(function (AiConnectionException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 502);
+        });
+
+        $exceptions->render(function (AiParsingException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+        });
+
+        $exceptions->render(function (NoComplaintsFoundForAnalysisException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (AiReportNotFoundException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
         });
     }
 }

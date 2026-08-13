@@ -34,8 +34,6 @@ class ComplaintService
         protected ComplaintGuestLinkService $guestLinkService
     ) {}
 
-    // --- 🔍 Read & Query Operations ---
-
     public function paginate(array $filters = [], array $relations = [], int $perPage = 15): LengthAwarePaginator
     {
         return $this->complaintDAO->paginate($filters, $relations, $perPage);
@@ -71,8 +69,6 @@ class ComplaintService
         return $this->complaintDAO->byBranch($branchId, $filters, $perPage, $relations);
     }
 
-    // --- 📝 Creation ---
-
     public function createComplaint(CreateComplaintDTO $dto, array $attachments = []): Complaint
     {
         return $this->transaction->execute(function () use ($dto, $attachments) {
@@ -82,6 +78,7 @@ class ComplaintService
             $complaint = $this->complaintDAO->store([
                 'client_id'     => $dto->clientId,
                 'device_id'     => $dto->device_id,
+                'uuid'          => $dto->uuid,
                 'branch_id'     => $dto->branchId,
                 'category_id'   => $dto->categoryId,
                 'title'         => $dto->title,

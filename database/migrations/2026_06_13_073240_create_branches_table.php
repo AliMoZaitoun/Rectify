@@ -21,6 +21,9 @@ return new class extends Migration
                 ->constrained('employees')
                 ->nullOnDelete();
 
+            $table->decimal('monthly_amount_budget', 10, 2)->default(1000.00)->after('description');
+            $table->integer('monthly_points_budget')->default(5000);
+
             $table->softDeletes();
             $table->timestamps();
         });

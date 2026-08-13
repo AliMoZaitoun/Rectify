@@ -43,9 +43,15 @@ class CompensationDAO
 
     public function paginate(array $filters = [], int $perPage = 15)
     {
-        return ComplaintCompensation::with(['complaint', 'client', 'approvedBy'])
+        return ComplaintCompensation::with(['complaint', 'branch', 'client', 'approvedBy'])
+            ->when(isset($filters['branch_id']), fn($q) => $q->where('branch_id', $filters['branch_id']))
             ->when(isset($filters['type']), fn($q) => $q->where('type', $filters['type']))
             ->when(isset($filters['status']), fn($q) => $q->where('status', $filters['status']))
+            ->when(isset($filters['requested_by_role']), function ($q) use ($filters) {
+                $q->whereHas('approvedBy.user.roles', function ($roleQuery) use ($filters) {
+                    $roleQuery->where('name', $filters['requested_by_role']);
+                });
+            })
             ->latest()
             ->paginate($perPage);
     }

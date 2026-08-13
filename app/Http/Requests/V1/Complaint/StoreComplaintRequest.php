@@ -15,7 +15,7 @@ class StoreComplaintRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'uuid'          => ['nullable', 'uuid', 'unqiue:complaints,uuid'],
+            'uuid'          => ['nullable', 'uuid'],
             'device_id'     => ['required', 'string'],
             'branch_id'     => ['required', 'integer', 'exists:branches,id'],
             'category_id'   => ['required', 'integer', 'exists:categories,id'],
