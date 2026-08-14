@@ -37,7 +37,7 @@ return new class extends Migration
             $table->timestamp('sla_due_at')->nullable();
             $table->timestamp('resolved_at')->nullable();
 
-            $table->text('ai_summary')->nullable();
+            $table->json('ai_summary')->nullable();
             $table->string('ai_suggested_category')->nullable();
             $table->boolean('is_spam')->default(false);
 

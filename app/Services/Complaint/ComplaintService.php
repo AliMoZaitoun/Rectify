@@ -14,7 +14,9 @@ use App\DTOs\Complaint\ReopenComplaintDTO;
 use App\Enums\ComplaintPriority;
 use App\Enums\ComplaintStatus;
 use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
+use App\Jobs\ProcessComplaintAiAnalysis;
 use App\Models\Complaint\Complaint;
+use App\Services\AI\ComplaintAiService;
 use App\Services\FileManagerService;
 use App\Services\TransactionService;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -31,7 +33,8 @@ class ComplaintService
         protected ComplaintLifecycleService $lifecycleService,
         protected ComplaintActionService $actionService,
         protected ComplaintMergeService $mergeService,
-        protected ComplaintGuestLinkService $guestLinkService
+        protected ComplaintGuestLinkService $guestLinkService,
+        private ComplaintAiService $aiService
     ) {}
 
     public function paginate(array $filters = [], array $relations = [], int $perPage = 15): LengthAwarePaginator
@@ -72,22 +75,23 @@ class ComplaintService
     public function createComplaint(CreateComplaintDTO $dto, array $attachments = []): Complaint
     {
         return $this->transaction->execute(function () use ($dto, $attachments) {
-            $category = $this->categoryDAO->byId($dto->categoryId);
+
+            $category = $dto->categoryId ? $this->categoryDAO->byId($dto->categoryId) : null;
             $slaHours = $category ? $category->sla_hours : 24;
 
             $complaint = $this->complaintDAO->store([
-                'client_id'     => $dto->clientId,
-                'device_id'     => $dto->device_id,
-                'uuid'          => $dto->uuid,
-                'branch_id'     => $dto->branchId,
-                'category_id'   => $dto->categoryId,
-                'title'         => $dto->title,
-                'description'   => $dto->description,
-                'priority'      => ComplaintPriority::MEDIUM->value,
-                'is_anonymous'  => $dto->isAnonymous,
-                'tracking_code' => 'CMP-' . strtoupper(Str::random(8)),
-                'sla_due_at'    => now()->addHours($slaHours),
-                'status'        => ComplaintStatus::PENDING->value,
+                'client_id'             => $dto->clientId,
+                'device_id'             => $dto->device_id,
+                'uuid'                  => $dto->uuid,
+                'branch_id'             => $dto->branchId,
+                'category_id'           => $dto->categoryId,
+                'title'                 => $dto->title,
+                'description'           => $dto->description,
+                'priority'              => 'medium',
+                'is_anonymous'          => $dto->isAnonymous,
+                'tracking_code'         => 'CMP-' . strtoupper(Str::random(8)),
+                'sla_due_at'            => now()->addHours($slaHours),
+                'status'                => ComplaintStatus::PENDING->value,
             ]);
 
             $this->historyDAO->store(new ComplaintHistoryDTO(
@@ -107,11 +111,15 @@ class ComplaintService
                 );
             }
 
+            ProcessComplaintAiAnalysis::dispatch(
+                $complaint->id,
+                $complaint->title,
+                $complaint->description
+            )->afterResponse();
+
             return $complaint;
         });
     }
-
-    // --- 🔄 Delegation to Domain Services ---
 
     public function changeStatus(Complaint $complaint, ChangeComplaintStatusDTO $dto): Complaint
     {

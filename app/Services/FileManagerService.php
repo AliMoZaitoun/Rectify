@@ -30,6 +30,7 @@ class FileManagerService
             }
 
             $passedType = is_array($fileData) ? ($fileData['type'] ?? null) : null;
+            $passedUuid = is_array($fileData) ? ($fileData['uuid'] ?? null) : null;
             $customProps = is_array($fileData) ? ($fileData['custom_properties'] ?? []) : [];
 
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
@@ -56,7 +57,7 @@ class FileManagerService
             $finalType = $passedType ?: ($typeResolver ? $typeResolver($file) : $this->detectFileType($file));
 
             $storedRecords[] = $model->{$relationName}()->create([
-                'uuid'              => $fileData['uuid'] ?? (string) Str::uuid(),
+                'uuid'              => $passedUuid ?: (string) Str::uuid(),
                 'path'              => $path,
                 'original_name'     => $file->getClientOriginalName(),
                 'type'              => $finalType,

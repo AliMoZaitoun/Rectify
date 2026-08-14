@@ -38,12 +38,6 @@ class CompensationService
     public function compensate(CompensationDTO $dto): ComplaintCompensation
     {
         return $this->transaction->execute(function () use ($dto) {
-            $existing = $this->compensationDAO->byComplaintId($dto->complaintId);
-
-            if ($existing) {
-                throw new ComplaintAlreadyCompensatedException();
-            }
-
             $complaint = $this->complaintDAO->byId($dto->complaintId);
 
             if ($complaint->status !== ComplaintStatus::RESOLVED) {
@@ -52,6 +46,14 @@ class CompensationService
 
             if ($complaint->parent_id !== null) {
                 throw new CannotModifyMergedComplaintException();
+            }
+
+            $existing = $this->compensationDAO->byComplaintId($dto->complaintId);
+
+            if ($existing) {
+                if ($existing->status !== CompensationStatus::REJECTED->value) {
+                    throw new ComplaintAlreadyCompensatedException();
+                }
             }
 
             $employeeLimit = $this->getEmployeeCompensationLimit($dto->approvedById);
@@ -87,7 +89,12 @@ class CompensationService
                 'granted_at'     => $grantedAt,
             ];
 
-            $compensation = $this->compensationDAO->store($compensationData);
+            if ($existing) {
+                $this->compensationDAO->update($existing, $compensationData);
+                $compensation = $existing->fresh();
+            } else {
+                $compensation = $this->compensationDAO->store($compensationData);
+            }
 
             if ($status === CompensationStatus::GRANTED && $isPoints) {
                 $this->clientDAO->incrementPoints($dto->clientId, (int) $dto->amount);
@@ -136,8 +143,15 @@ class CompensationService
         });
     }
 
-    private function getEmployeeCompensationLimit(int $employeeId): float
+    private function getEmployeeCompensationLimit(?int $employeeId): float
     {
+        if (! $employeeId) {
+            if (auth()->check() && auth()->user()->hasRole('admin')) {
+                return PHP_FLOAT_MAX;
+            }
+            return 0.00;
+        }
+
         $employee = Employee::with('user')->find($employeeId);
 
         if ($employee && $employee->user->hasRole('admin')) {

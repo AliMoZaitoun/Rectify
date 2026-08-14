@@ -32,6 +32,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'ai_suggested_category',
     'is_spam'
 ])]
+
 class Complaint extends Model
 {
     use LogsActivity;
@@ -42,6 +43,7 @@ class Complaint extends Model
         'status' => ComplaintStatus::class,
         'priority' => ComplaintPriority::class,
         'is_anonymous' => 'boolean',
+        'ai_summary' => 'array',
         'is_spam' => 'boolean'
     ];
 
