@@ -35,8 +35,10 @@ class AppComplaintResource extends JsonResource
             'status'         => $statusValue,
             'status_label'   => $statusLabel,
 
-            'created_at'     => $this->created_at?->toIso8601String(),
+            'sla_due_at'     => $this->sla_due_at?->toIso8601String(),
             'resolved_at'    => $this->resolved_at?->toIso8601String(),
+            'created_at'     => $this->created_at?->toIso8601String(),
+
 
             'branch'         => new BranchResource($this->whenLoaded('branch')),
             'category'       => new CategoryResource($this->whenLoaded('category')),
