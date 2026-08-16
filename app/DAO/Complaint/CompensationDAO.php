@@ -2,6 +2,7 @@
 
 namespace App\DAO\Complaint;
 
+use App\Enums\CompensationType;
 use App\Models\Complaint\ComplaintCompensation;
 
 class CompensationDAO
@@ -24,6 +25,13 @@ class CompensationDAO
             ->where('client_id', $clientId)
             ->latest()
             ->paginate($perPage);
+    }
+
+    public function byCouponCode(string $couponCode): ?ComplaintCompensation
+    {
+        return ComplaintCompensation::where('coupon_code', $couponCode)
+            ->where('type', CompensationType::COUPON->value)
+            ->first();
     }
 
     public function ById(int $id, array $relations = []): ?ComplaintCompensation

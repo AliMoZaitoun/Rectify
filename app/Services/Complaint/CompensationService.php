@@ -13,6 +13,9 @@ use App\Enums\CompensationType;
 use App\Exceptions\V1\Complaint\CannotModifyMergedComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
+use App\Exceptions\V1\Complaint\CouponAlreadyRedeemedException;
+use App\Exceptions\V1\Complaint\CouponNotGrantedException;
+use App\Exceptions\V1\Complaint\InvalidCouponException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
 use App\Models\Complaint\ComplaintCompensation;
 use App\Models\Core\Employee;
@@ -215,5 +218,32 @@ class CompensationService
     public function getCompensationForComplaint(int $complaintId, array $relations = []): ?ComplaintCompensation
     {
         return $this->compensationDAO->byComplaintId($complaintId, $relations);
+    }
+
+    public function redeemCoupon(string $couponCode, int $employeeId): ComplaintCompensation
+    {
+        return $this->transaction->execute(function () use ($couponCode, $employeeId) {
+
+            $compensation = $this->compensationDAO->byCouponCode($couponCode);
+
+            if (! $compensation) {
+                throw new InvalidCouponException();
+            }
+
+            if ($compensation->status !== CompensationStatus::GRANTED->value) {
+                throw new CouponNotGrantedException();
+            }
+
+            if ($compensation->redeemed_at !== null) {
+                throw new CouponAlreadyRedeemedException();
+            }
+
+            $compensation->redeemed_at = now();
+            $compensation->redeemed_by_id = $employeeId;
+
+            $this->compensationDAO->update($compensation, $compensation->toArray());
+
+            return $compensation->fresh(['client', 'approvedBy', 'redeemedBy']);
+        });
     }
 }

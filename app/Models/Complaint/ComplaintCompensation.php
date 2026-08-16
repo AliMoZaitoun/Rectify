@@ -25,6 +25,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'notes',
     'status',
     'granted_at',
+    'redeemed_at',
+    'redeemed_by_id'
 ])]
 class ComplaintCompensation extends Model
 {
@@ -57,6 +59,11 @@ class ComplaintCompensation extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by_id');
+    }
+
+    public function redeemedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'redeemed_by_id');
     }
 
     public function getActivitylogOptions(): LogOptions

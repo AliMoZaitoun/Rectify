@@ -69,4 +69,18 @@ class ClientController extends Controller
         $this->clientService->destroy($id);
         return $this->successResponse([], __('messages.common.deleted'));
     }
+
+    public function redeemPoints(Request $request)
+    {
+        $request->validate([
+            'client_id' => ['required', 'exists:clients,id'],
+            'points'    => ['required', 'integer', 'min:1'],
+        ]);
+
+        $client = $this->clientService->redeemPoints($request->client_id, $request->points);
+
+        return $this->successResponse([
+            'remaining_points' => $client->points
+        ], __('messages.client.points_redeemed_successfully'));
+    }
 }

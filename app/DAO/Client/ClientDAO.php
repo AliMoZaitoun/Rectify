@@ -44,14 +44,26 @@ class ClientDAO
         return $client->user->delete();
     }
 
-    public function incrementPoints(int $clientId, int $points): bool
+    public function incrementPoints(int $clientId, int $points)
     {
-        return (bool) Client::where('id', $clientId)->increment('points', $points);
+        $client = $this->show($clientId);
+
+        $client->points += $points;
+
+        $client->save();
+
+        return $client;
     }
 
-    public function decrementPoints(int $clientId, int $points): bool
+    public function decrementPoints(int $clientId, int $points)
     {
-        return (bool) Client::where('id', $clientId)->decrement('points', $points);
+        $client = $this->show($clientId);
+
+        $client->points -= $points;
+
+        $client->save();
+
+        return $client;
     }
 
     public function getAtRiskClients(string $sinceDate)

@@ -72,6 +72,24 @@ return [
             'sla_escalated_internal' => 'Complaint automatically escalated to branch manager due to SLA breach.',
         ],
     ],
+
+    'core' => [
+        'employee_required' => 'Invalid permission, you must be an employee to perform this action.',
+    ],
+
+    'client' => [
+        'client_not_found'             => 'Client not found.',
+        'insufficient_points'          => 'Insufficient points balance to complete the redemption.',
+        'points_redeemed_successfully' => 'Points redeemed successfully.',
+    ],
+
+    'compensations' => [
+        'invalid_coupon'          => 'The coupon is invalid or does not exist.',
+        'coupon_not_granted'      => 'This coupon has not been granted for redemption.',
+        'coupon_already_redeemed' => 'Sorry, this coupon has already been redeemed.',
+        'redeemed_successfully'   => 'Coupon redeemed successfully.',
+    ],
+
     'ai' => [
         'disabled' => 'The AI assistant is disabled or not configured by management.',
         'generation_failed' => 'An error occurred while generating the AI response. Please try again later.',

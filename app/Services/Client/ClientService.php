@@ -10,6 +10,8 @@ use App\DTOs\Client\Create\CreateClientDTO;
 use App\DTOs\User\Create\CreateUserDTO;
 use App\Events\OTPEvent;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\V1\Client\ClientNotFoundException;
+use App\Exceptions\V1\Client\InsufficientPointsException;
 use App\Services\OtpService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Auth;
@@ -69,5 +71,24 @@ class ClientService
     public function destroy(int $id)
     {
         return $this->clientDAO->destroy($id);
+    }
+
+    public function redeemPoints(int $clientId, int $pointsToRedeem)
+    {
+        return $this->transaction->execute(function () use ($clientId, $pointsToRedeem) {
+            $client = $this->clientDAO->show($clientId);
+
+            if (! $client) {
+                throw new ClientNotFoundException();
+            }
+
+            if ($client->points < $pointsToRedeem) {
+                throw new InsufficientPointsException();
+            }
+
+            $this->clientDAO->decrementPoints($clientId, $pointsToRedeem);
+
+            return $client->fresh();
+        });
     }
 }

@@ -8,6 +8,8 @@ use App\Exceptions\V1\AI\AiConnectionException;
 use App\Exceptions\V1\AI\AiParsingException;
 use App\Exceptions\V1\AI\AiReportNotFoundException;
 use App\Exceptions\V1\AI\NoComplaintsFoundForAnalysisException;
+use App\Exceptions\V1\Client\ClientNotFoundException;
+use App\Exceptions\V1\Client\InsufficientPointsException;
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
@@ -15,8 +17,12 @@ use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyRatedException;
 use App\Exceptions\V1\Complaint\ComplaintNotFoundException;
 use App\Exceptions\V1\Complaint\ComplaintNotResolvedForRatingException;
+use App\Exceptions\V1\Complaint\CouponAlreadyRedeemedException;
+use App\Exceptions\V1\Complaint\CouponNotGrantedException;
 use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
+use App\Exceptions\V1\Complaint\InvalidCouponException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
+use App\Exceptions\V1\Core\EmployeeRequiredException;
 use App\Exceptions\V1\EmailAlreadyVerifiedException;
 use App\Exceptions\V1\InvalidPasswordException;
 use App\Exceptions\V1\InvalidRefreshTokenException;
@@ -149,6 +155,30 @@ class Handler
 
         $exceptions->render(function (AiReportNotFoundException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (InvalidCouponException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (CouponNotGrantedException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (CouponAlreadyRedeemedException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (ClientNotFoundException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        });
+
+        $exceptions->render(function (EmployeeRequiredException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (InsufficientPointsException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         });
     }
 }

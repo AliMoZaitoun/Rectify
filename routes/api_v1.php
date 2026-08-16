@@ -209,6 +209,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('compensations')->group(function () {
         Route::get('/', [CompensationController::class, 'index']);
 
+        Route::post('/redeem', [CompensationController::class, 'redeemCoupon']);
+
         Route::prefix('{compensation}')->group(function () {
             Route::patch('status', [CompensationController::class, 'updateStatus']);
         });
@@ -234,6 +236,9 @@ Route::prefix('dashboard/ai/reports')->middleware(['auth:sanctum'])->group(funct
     Route::get('{id}', [AiReportController::class, 'show']);
     Route::post('generate', [AiReportController::class, 'generate']);
 });
+
+Route::post('/client/redeem-points', [ClientController::class, 'redeemPoints'])->middleware('auth:sanctum');
+Route::get('client/{id}/details', [ClientController::class, 'show'])->middleware('auth:sanctum');
 
 /*
 |--------------------------------------------------------------------------

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Complaint\Compensation;
 
 use App\DTOs\Complaint\CompensationDTO;
 use App\Enums\CompensationStatus;
+use App\Exceptions\V1\Core\EmployeeRequiredException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
 use App\Http\Resources\V1\Compensation\DashboardCompensationResource;
@@ -81,5 +82,26 @@ class CompensationController extends Controller
         $compensation = $this->compensationService->updateStatus($id, $status);
 
         return $this->useResource($compensation, DashboardCompensationResource::class, __('messages.common.updated'));
+    }
+
+    public function redeemCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => ['required', 'string'],
+        ]);
+
+        $employee = Auth::user()?->employee;
+
+        if (!$employee) {
+            throw new EmployeeRequiredException();
+        }
+
+        $compensation = $this->compensationService->redeemCoupon($request->coupon_code, $employee->id);
+
+        return $this->useResource(
+            $compensation,
+            DashboardCompensationResource::class,
+            __('messages.compensations.redeemed_successfully')
+        );
     }
 }

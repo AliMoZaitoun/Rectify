@@ -71,6 +71,24 @@ return [
             'sla_escalated_internal' => 'تم تصعيد الشكوى تلقائياً لمدير الفرع بسبب تجاوز الوقت المتوقع للحل (SLA Breached).',
         ],
     ],
+
+    'core' => [
+        'employee_required' => 'صلاحية غير صالحة، يجب أن تكون موظفاً لإتمام هذه العملية.',
+    ],
+
+    'client' => [
+        'client_not_found'             => 'العميل غير موجود.',
+        'insufficient_points'          => 'رصيد النقاط غير كافٍ لإتمام عملية الخصم.',
+        'points_redeemed_successfully' => 'تم خصم النقاط بنجاح.',
+    ],
+
+    'compensations' => [
+        'invalid_coupon'          => 'الكوبون غير صالح أو غير موجود.',
+        'coupon_not_granted'      => 'هذا الكوبون غير معتمد للصرف بعد.',
+        'coupon_already_redeemed' => 'عذراً، تم صرف هذا الكوبون مسبقاً.',
+        'redeemed_successfully'   => 'تم صرف الكوبون بنجاح.',
+    ],
+
     'ai' => [
         'disabled' => 'المساعد الذكي معطل أو غير معد مسبقاً من قبل الإدارة.',
         'generation_failed' => 'حدث خطأ أثناء محاولة توليد الرد من الذكاء الاصطناعي. يرجى المحاولة لاحقاً.',

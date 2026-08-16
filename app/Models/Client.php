@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
-#[Fillable(['user_id', 'points'])]
 class Client extends Model
 {
     use LogsActivity;
+
+    protected $fillable = ['user_id', 'points'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -31,8 +33,7 @@ class Client extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
+            ->logAll()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 }

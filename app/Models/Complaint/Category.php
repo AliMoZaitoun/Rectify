@@ -36,6 +36,7 @@ class Category extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
+            ->logOnly(['*'])
             ->logFillable()
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
