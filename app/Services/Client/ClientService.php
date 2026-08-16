@@ -9,9 +9,11 @@ use App\DTOs\User\Update\UpdateUserDTO;
 use App\DTOs\Client\Create\CreateClientDTO;
 use App\DTOs\User\Create\CreateUserDTO;
 use App\Events\OTPEvent;
+use App\Events\V1\Client\PointsRedeemedEvent;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\V1\Client\ClientNotFoundException;
 use App\Exceptions\V1\Client\InsufficientPointsException;
+use App\Models\Core\Employee;
 use App\Services\OtpService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Auth;
@@ -73,9 +75,9 @@ class ClientService
         return $this->clientDAO->destroy($id);
     }
 
-    public function redeemPoints(int $clientId, int $pointsToRedeem)
+    public function redeemPoints(int $clientId, int $pointsToRedeem, int $employeeId)
     {
-        return $this->transaction->execute(function () use ($clientId, $pointsToRedeem) {
+        return $this->transaction->execute(function () use ($clientId, $pointsToRedeem, $employeeId) {
             $client = $this->clientDAO->show($clientId);
 
             if (! $client) {
@@ -87,6 +89,10 @@ class ClientService
             }
 
             $this->clientDAO->decrementPoints($clientId, $pointsToRedeem);
+
+            $employee = Employee::with('user')->find($employeeId);
+
+            event(new PointsRedeemedEvent($client, $pointsToRedeem, $employee));
 
             return $client->fresh();
         });

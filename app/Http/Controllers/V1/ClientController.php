@@ -12,6 +12,7 @@ use App\Http\Resources\V1\ClientDetailResource;
 use App\Services\Client\ClientService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
@@ -77,7 +78,7 @@ class ClientController extends Controller
             'points'    => ['required', 'integer', 'min:1'],
         ]);
 
-        $client = $this->clientService->redeemPoints($request->client_id, $request->points);
+        $client = $this->clientService->redeemPoints($request->client_id, $request->points, Auth::user()->employee->id);
 
         return $this->successResponse([
             'remaining_points' => $client->points
