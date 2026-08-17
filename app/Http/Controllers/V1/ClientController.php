@@ -37,7 +37,7 @@ class ClientController extends Controller
 
         $data = $this->clientService->store($userDTO, $clientDTO);
 
-        return $this->successResponse([], __('messages.auth.otp_sent'), 201);
+        return $this->successResponse([], __('messages.common.success'), 201);
 
         // return $this->useResource($data['client'], ClientDetailResource::class, __('messages.auth.otp_sent'), 201);
     }
