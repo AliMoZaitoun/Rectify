@@ -93,9 +93,9 @@ class ComplaintLifecycleService
             return $complaint->fresh(['histories', 'assignedTo', 'client.user']);
         });
 
-        ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatusValue);
-        // if ($oldStatusValue !== $newStatusValue) {
-        // }
+        if ($oldStatusValue !== $newStatusValue) {
+            ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatusValue);
+        }
 
         return $updatedComplaint;
     }

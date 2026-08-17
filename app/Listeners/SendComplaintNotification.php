@@ -27,9 +27,13 @@ class SendComplaintNotification
 
             try {
                 if ($event instanceof ComplaintStatusUpdated) {
-                    $statusLabel = method_exists($complaint->status, 'label')
+                    $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                        ? $complaint->status->value
+                        : (string) $complaint->status;
+
+                    $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
                         ? $complaint->status->label()
-                        : $complaint->status->value;
+                        : $statusValue;
 
                     $user->notify(new BaseNotification(
                         title: __('notifications.complaint_status_updated.title'),
@@ -40,7 +44,7 @@ class SendComplaintNotification
                         data: [
                             'type'          => 'complaint_status_updated',
                             'tracking_code' => (string) $trackingCode,
-                            'status'        => $complaint->status->value,
+                            'status'        => $statusValue,
                         ],
                         actionUrl: "/complaints/{$trackingCode}"
                     ));
@@ -82,9 +86,14 @@ class SendComplaintNotification
             $data = [];
 
             if ($event instanceof ComplaintStatusUpdated) {
-                $statusLabel = method_exists($complaint->status, 'label')
+                // استخراج الحالة بأمان للزائر أيضاً
+                $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                    ? $complaint->status->value
+                    : (string) $complaint->status;
+
+                $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
                     ? $complaint->status->label()
-                    : $complaint->status->value;
+                    : $statusValue;
 
                 $title = __('notifications.complaint_status_updated.title');
                 $body  = __('notifications.complaint_status_updated.body', [
@@ -94,7 +103,7 @@ class SendComplaintNotification
                 $data  = [
                     'type'          => 'complaint_status_updated',
                     'tracking_code' => (string) $trackingCode,
-                    'status'        => $complaint->status->value,
+                    'status'        => $statusValue,
                 ];
             }
 
