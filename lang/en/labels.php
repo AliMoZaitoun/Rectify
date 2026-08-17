@@ -28,6 +28,13 @@ return [
         'escalated'         => 'Escalated'
     ],
 
+    'action_types' => [
+        'complaint_submitted' => 'Complaint Submitted',
+        'request_documents'  => 'Request new documents',
+        'document_submitted' => 'Document submitted',
+        'message'            => 'Message',
+    ],
+
     'ai_tone' => [
         'professional' => 'Professional & Formal',
         'empathetic'   => 'Empathetic & Understanding',

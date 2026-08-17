@@ -29,6 +29,13 @@ return [
         'escalated'         => 'مُصَعَّدة',
     ],
 
+    'action_types' => [
+        'complaint_submitted' => 'تم تقديم الشكوى.',
+        'request_documents'  => 'طلب وثائق إضافية',
+        'document_submitted' => 'تم تقديم الوثائق',
+        'message'            => 'رسالة',
+    ],
+
     'ai_tone' => [
         'professional' => 'رسمية واحترافية',
         'empathetic'   => 'متعاطفة ومتفهمة',

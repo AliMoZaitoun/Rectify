@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources\V1\Complaint;
 
-use App\Http\Resources\V1\EmployeeDetailResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Lang;
 
 class DashboardComplaintHistoryResource extends JsonResource
 {
@@ -14,20 +15,44 @@ class DashboardComplaintHistoryResource extends JsonResource
             'id'                => $this->id,
             'old_status'        => $this->old_status,
             'new_status'        => $this->new_status,
-            'duration_in_hours' => (int) $this->duration_in_hours,
+            'duration_in_hours' => $this->duration_in_hours,
+
             'comment'           => $this->comment,
+
+            'comment_label'     => $this->translateComment($this->comment),
+
             'created_at'        => $this->created_at?->toIso8601String(),
             'is_visible'        => $this->is_visible,
-
-            'assigned_to' => new EmployeeDetailResource($this->whenLoaded('assignedTo')),
 
             'changed_by'  => $this->whenLoaded('changedBy', function () {
                 return [
                     'id'   => $this->changedBy->id,
-                    'name' => $this->changedBy->name ?? $this->changedBy->full_name ?? 'System',
+                    'name' => $this->changedBy->name ?? $this->changedBy->first_name . ' ' . $this->changedBy->last_name ?? 'System',
                     'type' => class_basename($this->changed_by_type),
                 ];
             }),
         ];
+    }
+
+    protected function translateComment(?string $comment): ?string
+    {
+        if (!$comment) return null;
+
+        $actionKey = "labels.action_types.{$comment}";
+        if (Lang::has($actionKey)) {
+            return __($actionKey);
+        }
+
+        if (Str::startsWith($comment, 'complaint.history.')) {
+
+            if (Str::contains($comment, '|')) {
+                [$key, $param] = explode('|', $comment);
+                return __("messages.{$key}", ['tracking_code' => $param]);
+            }
+
+            return __("messages.{$comment}");
+        }
+
+        return $comment;
     }
 }

@@ -83,7 +83,7 @@ class ComplaintLifecycleService
                         oldStatus: $childOldStatus,
                         changedByType: $dto->changedByType,
                         changedById: $dto->changedById,
-                        comment: "Auto-updated via parent complaint #{$complaint->tracking_code}"
+                        comment: "complaint.history.auto_updated_parent|{$complaint->tracking_code}"
                     ));
 
                     ComplaintStatusUpdated::dispatch($child, $childOldStatus);
@@ -115,8 +115,31 @@ class ComplaintLifecycleService
             throw new ComplaintAlreadyRatedException();
         }
 
-        return $this->transaction->execute(function () use ($complaint, $dto) {
-            return $this->ratingDAO->store($dto->toArray($complaint->id));
+        return $this->transaction->execute(function () use ($complaint, $dto, $statusValue) {
+            $rating = $this->ratingDAO->store($dto->toArray($complaint->id));
+
+            $targetStatus = ComplaintStatus::CLOSED->value;
+            $this->complaintDAO->update($complaint, ['status' => $targetStatus]);
+
+            $lastHistory = $complaint->histories()->first();
+            $durationInHours = $lastHistory
+                ? (int) $lastHistory->created_at->diffInHours(now())
+                : (int) $complaint->created_at->diffInHours(now());
+
+            $this->historyDAO->store(new ComplaintHistoryDTO(
+                complaintId: $complaint->id,
+                newStatus: $targetStatus,
+                oldStatus: $statusValue,
+                assignedToId: $complaint->assigned_to_id,
+                changedByType: 'client',
+                changedById: $dto->clientId ?? $complaint->client_id,
+                durationInHours: $durationInHours,
+                comment: 'complaint.history.closed_after_rating'
+            ));
+
+            ComplaintStatusUpdated::dispatch($complaint, $statusValue);
+
+            return $rating;
         });
     }
 
@@ -130,7 +153,7 @@ class ComplaintLifecycleService
             throw new CannotReopenComplaintException();
         }
 
-        return $this->transaction->execute(function () use ($complaint, $oldStatus, $dto) {
+        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $oldStatus, $dto) {
             $targetStatus = ComplaintStatus::IN_PROGRESS->value;
 
             $this->complaintDAO->update($complaint, [
@@ -151,10 +174,14 @@ class ComplaintLifecycleService
                 changedByType: $dto->actorType,
                 changedById: $dto->actorId,
                 durationInHours: $durationInHours,
-                comment: "Reopened by customer: {$dto->reason}"
+                comment: "complaint.history.reopened_by_customer|{$dto->reason}"
             ));
 
             return $complaint->fresh(['branch', 'category', 'media', 'actions', 'histories', 'compensation', 'latestRating']);
         });
+
+        ComplaintStatusUpdated::dispatch($updatedComplaint, $oldStatus);
+
+        return $updatedComplaint;
     }
 }

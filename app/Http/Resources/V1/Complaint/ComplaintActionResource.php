@@ -11,12 +11,13 @@ class ComplaintActionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'action_type' => $this->action_type,
-            'content'     => $this->content,
-            'created_at'  => $this->created_at?->toIso8601String(),
+            'id'                => $this->id,
+            'action_type'       => $this->action_type,
+            'action_type_label' => __("labels.action_types.{$this->action_type}"),
+            'content'           => $this->content,
+            'created_at'        => $this->created_at?->toIso8601String(),
 
-            'attachments' => MediaResource::collection($this->whenLoaded('media')),
+            'attachments'       => MediaResource::collection($this->whenLoaded('media')),
 
             'actor' => $this->whenLoaded('actor', function () {
                 return [

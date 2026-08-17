@@ -70,6 +70,12 @@ return [
             'auto_resolved'     => 'The issue has been resolved and its resolution documented by the specialized team.',
 
             'sla_escalated_internal' => 'Complaint automatically escalated to branch manager due to SLA breach.',
+
+            'auto_status_change_request_documents'  => 'Auto status change: Documents requested from client.',
+            'auto_status_change_document_submitted' => 'Auto status change: Documents submitted by client.',
+            'auto_status_change_comment'            => 'Auto status change: New message.',
+
+            'auto_updated_parent' => 'Auto-updated via parent complaint :tracking_code',
         ],
     ],
 

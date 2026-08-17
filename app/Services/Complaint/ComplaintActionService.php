@@ -41,7 +41,7 @@ class ComplaintActionService
 
             if (! empty($attachments)) {
                 $this->fileManager->storeFile(
-                    model: $$complaint,
+                    model: $complaint,
                     files: $attachments,
                     folderPath: "complaints/{$complaint->id}/actions",
                     relationName: 'media'
@@ -50,11 +50,13 @@ class ComplaintActionService
 
             $oldStatusValue = $complaint->status instanceof ComplaintStatus
                 ? $complaint->status->value
-                : $complaint->status;
+                : (string) $complaint->status;
 
             if ($dto->actionType === 'request_documents' && $oldStatusValue !== ComplaintStatus::WAITING_DOCUMENTS->value) {
                 $targetStatus = ComplaintStatus::WAITING_DOCUMENTS->value;
             } elseif ($dto->actionType === 'document_submitted' && $oldStatusValue === ComplaintStatus::WAITING_DOCUMENTS->value) {
+                $targetStatus = ComplaintStatus::IN_PROGRESS->value;
+            } elseif ($oldStatusValue === ComplaintStatus::PENDING->value) {
                 $targetStatus = ComplaintStatus::IN_PROGRESS->value;
             }
 
@@ -74,11 +76,11 @@ class ComplaintActionService
                     changedByType: $dto->actorType,
                     changedById: $dto->actorId,
                     durationInHours: $durationInHours,
-                    comment: "Automatic status change via action: {$dto->actionType}"
+                    comment: "complaint.history.auto_status_change_{$dto->actionType}"
                 ));
             }
 
-            return $action->load(['actor', 'media']);
+            return $action->load(['actor', 'media', 'changedBy']);
         });
 
         ComplaintReplyAdded::dispatch($complaint, $action);

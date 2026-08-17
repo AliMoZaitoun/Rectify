@@ -69,6 +69,12 @@ return [
             'auto_resolved'     => 'تم حل المشكلة وتوثيق معالجتها من قبل الفريق المختص.',
 
             'sla_escalated_internal' => 'تم تصعيد الشكوى تلقائياً لمدير الفرع بسبب تجاوز الوقت المتوقع للحل (SLA Breached).',
+
+            'auto_status_change_request_documents'  => 'تغيير تلقائي للحالة: تم طلب وثائق من العميل.',
+            'auto_status_change_document_submitted' => 'تغيير تلقائي للحالة: قام العميل بتقديم الوثائق.',
+            'auto_status_change_comment'            => 'تغيير تلقائي للحالة: رسالة جديدة.',
+
+            'auto_updated_parent' => 'تحديث تلقائي عبر الشكوى الرئيسية رقم :tracking_code',
         ],
     ],
 

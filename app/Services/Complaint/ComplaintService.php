@@ -99,7 +99,7 @@ class ComplaintService
                 newStatus: ComplaintStatus::PENDING->value,
                 changedByType: $dto->clientId ? 'App\Models\Client' : null,
                 changedById: $dto->clientId,
-                comment: 'Complaint submitted'
+                comment: 'complaint_submitted'
             ));
 
             if (! empty($attachments)) {
