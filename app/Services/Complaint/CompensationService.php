@@ -116,24 +116,27 @@ class CompensationService
                 throw new CompensationNotFoundException();
             }
 
-            $isPoints = ($compensation->type === CompensationType::POINTS);
-            $hasClient = !is_null($compensation->client_id);
+            $complaint = $this->complaintDAO->byId($compensation->complaint_id);
+
+            $isAnonymous = (bool) $complaint->is_anonymous || is_null($compensation->client_id);
+
+            $isPoints = ($compensation->type === CompensationType::POINTS->value || $compensation->type === CompensationType::POINTS);
 
             $finalStatus = $newStatus;
 
-            if ($newStatus === CompensationStatus::GRANTED && !$hasClient && $isPoints) {
+            if ($newStatus === CompensationStatus::GRANTED && $isAnonymous && $isPoints) {
                 $finalStatus = CompensationStatus::PENDING;
             }
 
             if ($finalStatus === CompensationStatus::GRANTED && $compensation->status !== CompensationStatus::GRANTED->value) {
-                if ($isPoints && $hasClient) {
+                if ($isPoints && !$isAnonymous) {
                     $this->clientDAO->incrementPoints($compensation->client_id, (int) $compensation->amount);
                 }
                 $compensation->granted_at = now();
             }
 
             if ($finalStatus === CompensationStatus::REJECTED && $compensation->status === CompensationStatus::GRANTED->value) {
-                if ($isPoints && $hasClient) {
+                if ($isPoints && !$isAnonymous) {
                     $this->clientDAO->decrementPoints($compensation->client_id, (int) $compensation->amount);
                 }
                 $compensation->granted_at = null;

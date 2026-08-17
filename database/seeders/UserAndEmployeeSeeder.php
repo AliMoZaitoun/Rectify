@@ -53,7 +53,6 @@ class UserAndEmployeeSeeder extends Seeder
 
         foreach ($branches as $bIndex => $branch) {
 
-            // 1. اختيار اسم المدير أو توليد اسم راكز إن زادت الأفرع
             $managerName = $managersList[$bIndex % count($managersList)];
 
             $managerUser = User::create([

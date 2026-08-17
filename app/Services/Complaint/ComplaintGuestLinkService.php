@@ -54,7 +54,7 @@ class ComplaintGuestLinkService
                 $this->processPendingCompensations($clientId);
             }
 
-            return $updated;
+            return true;
         });
     }
 

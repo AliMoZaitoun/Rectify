@@ -211,7 +211,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('/redeem', [CompensationController::class, 'redeemCoupon']);
 
-        Route::prefix('{compensation}')->group(function () {
+        Route::prefix('{id}')->group(function () {
             Route::patch('status', [CompensationController::class, 'updateStatus']);
         });
     });
