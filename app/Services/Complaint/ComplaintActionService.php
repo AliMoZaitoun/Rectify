@@ -40,7 +40,7 @@ class ComplaintActionService
 
             if (! empty($attachments)) {
                 $this->fileManager->storeFile(
-                    model: $action,
+                    model: $$complaint,
                     files: $attachments,
                     folderPath: "complaints/{$complaint->id}/actions",
                     relationName: 'media'
