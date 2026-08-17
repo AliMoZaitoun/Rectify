@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\ComplaintStatus;
 use App\Events\ComplaintReplyAdded;
 use App\Events\ComplaintStatusUpdated;
 use App\Models\UserDeviceToken;
@@ -27,13 +28,13 @@ class SendComplaintNotification
 
             try {
                 if ($event instanceof ComplaintStatusUpdated) {
-                    $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                    $statusValue = $complaint->status instanceof ComplaintStatus
                         ? $complaint->status->value
                         : (string) $complaint->status;
 
-                    $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
+                    $statusLabel = $complaint->status instanceof ComplaintStatus
                         ? $complaint->status->label()
-                        : $statusValue;
+                        : __("labels.complaint_status.{$statusValue}");
 
                     $user->notify(new BaseNotification(
                         title: __('notifications.complaint_status_updated.title'),
@@ -86,14 +87,13 @@ class SendComplaintNotification
             $data = [];
 
             if ($event instanceof ComplaintStatusUpdated) {
-                // استخراج الحالة بأمان للزائر أيضاً
-                $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                $statusValue = $complaint->status instanceof ComplaintStatus
                     ? $complaint->status->value
                     : (string) $complaint->status;
 
-                $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
+                $statusLabel = $complaint->status instanceof ComplaintStatus
                     ? $complaint->status->label()
-                    : $statusValue;
+                    : __("labels.complaint_status.{$statusValue}");
 
                 $title = __('notifications.complaint_status_updated.title');
                 $body  = __('notifications.complaint_status_updated.body', [
