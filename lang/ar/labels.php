@@ -33,6 +33,7 @@ return [
         'complaint_submitted' => 'تم تقديم الشكوى.',
         'request_documents'  => 'طلب وثائق إضافية',
         'document_submitted' => 'تم تقديم الوثائق',
+        'comment'            => 'رسالة',
         'message'            => 'رسالة',
     ],
 

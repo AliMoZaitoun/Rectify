@@ -13,8 +13,8 @@ class DashboardComplaintHistoryResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'old_status'        => $this->old_status,
-            'new_status'        => $this->new_status,
+            'old_status'        => $this->old_status ? __("labels.complaint_status.{$this->old_status}") : null,
+            'new_status'        => $this->new_status ? __("labels.complaint_status.{$this->new_status}") : null,
             'duration_in_hours' => $this->duration_in_hours,
 
             'comment'           => $this->comment,
@@ -27,7 +27,7 @@ class DashboardComplaintHistoryResource extends JsonResource
             'changed_by'  => $this->whenLoaded('changedBy', function () {
                 return [
                     'id'   => $this->changedBy->id,
-                    'name' => $this->changedBy->name ?? $this->changedBy->first_name . ' ' . $this->changedBy->last_name ?? 'System',
+                    'name' => $this->changedBy->full_name ?? $this->changedBy->name ?? trim($this->changedBy->first_name . ' ' . $this->changedBy->last_name) ?: 'System',
                     'type' => class_basename($this->changed_by_type),
                 ];
             }),

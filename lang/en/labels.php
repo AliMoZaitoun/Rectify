@@ -32,6 +32,7 @@ return [
         'complaint_submitted' => 'Complaint Submitted',
         'request_documents'  => 'Request new documents',
         'document_submitted' => 'Document submitted',
+        'comment'            => 'Message',
         'message'            => 'Message',
     ],
 

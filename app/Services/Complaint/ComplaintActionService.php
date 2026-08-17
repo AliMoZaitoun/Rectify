@@ -80,7 +80,7 @@ class ComplaintActionService
                 ));
             }
 
-            return $action->load(['actor', 'media', 'changedBy']);
+            return $action->load(['actor', 'media', 'actor']);
         });
 
         ComplaintReplyAdded::dispatch($complaint, $action);
