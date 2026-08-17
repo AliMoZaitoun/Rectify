@@ -33,9 +33,9 @@ class AppServiceProvider extends ServiceProvider
             SendComplaintNotification::class
         );
 
-        Event::listen(
-            OTPEvent::class,
-            SendOTP::class
-        );
+        // Event::listen(
+        //     OTPEvent::class,
+        //     SendOTP::class
+        // );
     }
 }
