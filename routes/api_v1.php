@@ -216,7 +216,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
     });
 
-    Route::prefix('complaints/{complaint}/compensations')->group(function () {
+    Route::prefix('complaints/{complaintId}/compensations')->group(function () {
         Route::post('/', [CompensationController::class, 'store']);
         Route::get('/', [CompensationController::class, 'showByComplaint']);
     });
