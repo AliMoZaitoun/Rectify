@@ -36,13 +36,14 @@ class ClientService
     {
         return $this->transaction->execute(function () use ($userDTO, $clientDTO) {
             $user = $this->userDAO->store($userDTO);
+            $this->userDAO->verify($user);
             $clientDTO->user_id = $user->id;
 
             $client = $this->clientDAO->store($clientDTO);
 
-            $otp = $this->otpService->createCode($user->id);
+            // $otp = $this->otpService->createCode($user->id);
 
-            event(new OTPEvent($otp, $user->email));
+            // event(new OTPEvent($otp, $user->email));
 
             return $client;
         });
