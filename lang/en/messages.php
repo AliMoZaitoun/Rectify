@@ -76,6 +76,8 @@ return [
             'auto_status_change_comment'            => 'Auto status change: New message.',
 
             'auto_updated_parent' => 'Auto-updated via parent complaint :tracking_code',
+
+            'reopened' => 'Complaint Reopened by customer.'
         ],
     ],
 

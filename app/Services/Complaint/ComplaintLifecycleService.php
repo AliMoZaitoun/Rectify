@@ -174,7 +174,7 @@ class ComplaintLifecycleService
                 changedByType: $dto->actorType,
                 changedById: $dto->actorId,
                 durationInHours: $durationInHours,
-                comment: "complaint.history.reopened_by_customer|{$dto->reason}"
+                comment: "complaint.history.reopened|{$dto->reason}"
             ));
 
             return $complaint->fresh(['branch', 'category', 'media', 'actions', 'histories', 'compensation', 'latestRating']);

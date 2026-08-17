@@ -75,6 +75,9 @@ return [
             'auto_status_change_comment'            => 'تغيير تلقائي للحالة: رسالة جديدة.',
 
             'auto_updated_parent' => 'تحديث تلقائي عبر الشكوى الرئيسية رقم :tracking_code',
+
+            'reopened' => 'تم إعادة فتح الشكوى من قبل الزبون.'
+
         ],
     ],
 
