@@ -15,6 +15,7 @@ use App\Exceptions\V1\Complaint\CannotModifyMergedComplaintException;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyRatedException;
 use App\Exceptions\V1\Complaint\ComplaintNotResolvedForRatingException;
+use App\Exceptions\V1\Complaint\MaxReopenLimitReachedException;
 use App\Models\Complaint\Complaint;
 use App\Services\TransactionService;
 
@@ -153,12 +154,34 @@ class ComplaintLifecycleService
             throw new CannotReopenComplaintException();
         }
 
-        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $oldStatus, $dto) {
-            $targetStatus = ComplaintStatus::IN_PROGRESS->value;
+        $reopenCount = $complaint->reopen_count ?? 0;
+
+        if ($reopenCount >= 3) {
+            throw new MaxReopenLimitReachedException();
+        }
+
+        $isEscalation = ($reopenCount === 2);
+
+        $updatedComplaint = $this->transaction->execute(function () use ($complaint, $oldStatus, $dto, $reopenCount, $isEscalation) {
+
+            $targetStatus = $isEscalation
+                ? ComplaintStatus::ESCALATED->value
+                : ComplaintStatus::IN_PROGRESS->value;
+            $assignedToId = $complaint->assigned_to_id;
+
+            if ($isEscalation) {
+                $complaint->loadMissing('branch');
+
+                if ($complaint->branch && $complaint->branch->manager_id) {
+                    $assignedToId = $complaint->branch->manager_id;
+                }
+            }
+
 
             $this->complaintDAO->update($complaint, [
                 'status'      => $targetStatus,
                 'resolved_at' => null,
+                'reopen_count' => $reopenCount + 1
             ]);
 
             $lastHistory = $complaint->histories()->first();
@@ -166,15 +189,17 @@ class ComplaintLifecycleService
                 ? (int) $lastHistory->created_at->diffInHours(now())
                 : (int) $complaint->created_at->diffInHours(now());
 
+            $commentKey = $isEscalation ? "complaint.history.escalated" : "complaint.history.reopened";
+
             $this->historyDAO->store(new ComplaintHistoryDTO(
                 complaintId: $complaint->id,
                 newStatus: $targetStatus,
                 oldStatus: $oldStatus,
-                assignedToId: $complaint->assigned_to_id,
+                assignedToId: $assignedToId,
                 changedByType: $dto->actorType,
                 changedById: $dto->actorId,
                 durationInHours: $durationInHours,
-                comment: "complaint.history.reopened|{$dto->reason}"
+                comment: "{$commentKey}|{$dto->reason}"
             ));
 
             return $complaint->fresh(['branch', 'category', 'media', 'actions', 'histories', 'compensation', 'latestRating']);

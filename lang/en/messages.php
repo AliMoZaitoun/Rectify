@@ -77,8 +77,10 @@ return [
 
             'auto_updated_parent' => 'Auto-updated via parent complaint :tracking_code',
 
-            'reopened' => 'Complaint Reopened by customer.'
+            'reopened' => 'Complaint Reopened by customer.',
+            'escalated' => 'The complaint has been escalated to the branch manager',
         ],
+        'max_reopens_reached' => 'Sorry, you have reached the maximum allowed limit for reopening this complaint. Please contact customer service for further assistance.',
     ],
 
     'core' => [

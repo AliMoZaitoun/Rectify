@@ -30,7 +30,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'resolved_at',
     'ai_summary',
     'ai_suggested_category',
-    'is_spam'
+    'is_spam',
+    'reopen_count'
 ])]
 
 class Complaint extends Model

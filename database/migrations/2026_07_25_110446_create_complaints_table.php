@@ -41,6 +41,8 @@ return new class extends Migration
             $table->string('ai_suggested_category')->nullable();
             $table->boolean('is_spam')->default(false);
 
+            $table->integer('reopen_count')->default(0);
+
             $table->softDeletes();
             $table->timestamps();
 
