@@ -9,7 +9,7 @@ class ComplaintDAO
 {
     public function paginate(array $filters = [], array $relations = [], int $perPage = 15)
     {
-        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children.client', 'children.category', 'children.branch', 'ai'];
+        $defaultRelations = ['branch', 'category', 'client', 'media', 'compensation', 'latestRating', 'parent', 'children.client', 'children.category', 'children.branch'];
         $allRelations = array_merge($defaultRelations, $relations);
 
         return Complaint::query()
