@@ -134,9 +134,12 @@ class CompensationService
                 throw new CompensationNotFoundException();
             }
 
-            $complaint = $this->complaintDAO->byId($compensation->complaint_id);
+            $complaint = $compensation->complaint_id
+                ? $this->complaintDAO->byId($compensation->complaint_id)
+                : null;
 
-            $isAnonymous = (bool) $complaint->is_anonymous || is_null($compensation->client_id);
+            $isAnonymousComplaint = $complaint ? (bool) $complaint->is_anonymous : false;
+            $isAnonymous = $isAnonymousComplaint || is_null($compensation->client_id);
 
             $isPoints = ($compensation->type === CompensationType::POINTS->value || $compensation->type === CompensationType::POINTS);
 
