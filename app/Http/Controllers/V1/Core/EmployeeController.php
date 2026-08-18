@@ -49,6 +49,7 @@ class EmployeeController extends Controller
 
     public function update(int|string $id, Request $request)
     {
+        $id = (int) $id;
         $userDTO = UpdateUserDTO::fromRequest($request->all());
 
         // $employeeDTO = UpdateEmployeeDTO::fromRequest($request->all());
