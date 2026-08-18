@@ -42,6 +42,7 @@ class EmployeeService
 
         return $this->employeeDAO->index($filters);
     }
+
     public function store(CreateUserDTO $userDTO, CreateEmployeeDTO $employeeDTO)
     {
         return $this->transaction->execute(function () use ($userDTO, $employeeDTO) {

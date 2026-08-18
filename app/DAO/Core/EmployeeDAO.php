@@ -30,7 +30,7 @@ class EmployeeDAO
     public function store(CreateEmployeeDTO $employeeDTO)
     {
         $employee = Employee::create($employeeDTO->toArray());
-        $employee->user->assignRole('employee');
+        $employee->user->assignRole('staff');
         return $employee;
     }
 
