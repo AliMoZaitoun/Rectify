@@ -38,6 +38,10 @@ return [
         'no_results' => 'No results found.',
     ],
 
+    'branches' => [
+        'already_has_manager' => 'Sorry, this branch already has a manager. Please reassign the current manager before assigning a new one.',
+    ],
+
     'complaint' => [
         'complaint_not_found' => 'The requested complaint was not found.',
         'login_to_claim_reward'            => 'You have a pending compensation reward! Log in or create an account to claim your points.',
@@ -100,6 +104,7 @@ return [
         'coupon_not_granted'      => 'This coupon has not been granted for redemption.',
         'coupon_already_redeemed' => 'Sorry, this coupon has already been redeemed.',
         'redeemed_successfully'   => 'Coupon redeemed successfully.',
+        'client_required' => 'A client must be specified when the compensation is not linked to a complaint.',
     ],
 
     'ai' => [

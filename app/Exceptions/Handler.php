@@ -9,6 +9,7 @@ use App\Exceptions\V1\AI\AiParsingException;
 use App\Exceptions\V1\AI\AiReportNotFoundException;
 use App\Exceptions\V1\AI\NoComplaintsFoundForAnalysisException;
 use App\Exceptions\V1\Client\ClientNotFoundException;
+use App\Exceptions\V1\Client\ClientRequiredForDirectCompensationException;
 use App\Exceptions\V1\Client\InsufficientPointsException;
 use App\Exceptions\V1\Complaint\CannotDeleteGrantedCompensationException;
 use App\Exceptions\V1\Complaint\CannotReopenComplaintException;
@@ -23,6 +24,7 @@ use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
 use App\Exceptions\V1\Complaint\InvalidCouponException;
 use App\Exceptions\V1\Complaint\MaxReopenLimitReachedException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
+use App\Exceptions\V1\Core\BranchAlreadyHasManagerException;
 use App\Exceptions\V1\Core\EmployeeRequiredException;
 use App\Exceptions\V1\EmailAlreadyVerifiedException;
 use App\Exceptions\V1\InvalidPasswordException;
@@ -183,6 +185,14 @@ class Handler
         });
 
         $exceptions->render(function (MaxReopenLimitReachedException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (ClientRequiredForDirectCompensationException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (BranchAlreadyHasManagerException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         });
     }

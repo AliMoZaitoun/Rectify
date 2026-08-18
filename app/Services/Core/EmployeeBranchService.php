@@ -7,6 +7,7 @@ use App\DAO\Core\EmployeeBranchDAO;
 use App\DTOs\Core\Create\AssignEmployeeBranchDTO;
 use App\DTOs\Core\Update\UpdateEmployeeBranchDTO;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\V1\Core\BranchAlreadyHasManagerException;
 use App\Services\TransactionService;
 
 class EmployeeBranchService
@@ -24,11 +25,16 @@ class EmployeeBranchService
 
     public function store(AssignEmployeeBranchDTO $dto)
     {
+        if ($dto->position === 'manager') {
+            $existingManager = $this->employeeBranchDAO->hasActiveManager($dto->branch_id);
+
+            if ($existingManager) {
+                throw new BranchAlreadyHasManagerException();
+            }
+        }
         return $this->transaction->execute(function () use ($dto) {
             $record = $this->employeeBranchDAO->store($dto);
-
-            $employee = $this->employeeDAO->show($dto->employee_id);
-            $user = $employee->user;
+            $this->employeeDAO->show($dto->employee_id);
 
             return $record;
         });

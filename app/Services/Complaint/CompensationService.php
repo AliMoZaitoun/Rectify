@@ -10,6 +10,7 @@ use App\DAO\Core\SettingDAO;
 use App\Enums\ComplaintStatus;
 use App\Enums\CompensationStatus;
 use App\Enums\CompensationType;
+use App\Exceptions\V1\Client\ClientRequiredForDirectCompensationException;
 use App\Exceptions\V1\Complaint\CannotModifyMergedComplaintException;
 use App\Exceptions\V1\Complaint\CompensationNotFoundException;
 use App\Exceptions\V1\Complaint\ComplaintAlreadyCompensatedException;
@@ -68,7 +69,7 @@ class CompensationService
                 $isAnonymous = (bool) $complaint->is_anonymous || is_null($dto->clientId);
             } else {
                 if (is_null($dto->clientId)) {
-                    throw new \InvalidArgumentException('يجب تحديد العميل في حال كان التعويض غير مرتبط بشكوى.');
+                    throw new ClientRequiredForDirectCompensationException();
                 }
 
                 $employee = Employee::with('currentBranch')->find($dto->approvedById);

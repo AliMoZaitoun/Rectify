@@ -20,6 +20,14 @@ class EmployeeBranchDAO
         return EmployeeBranch::create($dto->toArray());
     }
 
+    public function hasActiveManager(int $branchId): bool
+    {
+        return EmployeeBranch::where('branch_id', $branchId)
+            ->where('position', 'manager')
+            ->whereNull('to_date')
+            ->exists();
+    }
+
     public function show(int $id)
     {
         return EmployeeBranch::where('id', $id)->with(['employee', 'branch'])->first();
