@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\ComplaintReplyAdded;
 use App\Events\ComplaintStatusUpdated;
 use App\Models\UserDeviceToken;
+use App\Enums\ComplaintStatus;
 use App\Notifications\BaseNotification;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +20,7 @@ class SendComplaintNotification
         $user = $complaint->client?->user;
         $trackingCode = $complaint->tracking_code;
 
-        if ($user && !$complaint->is_anonymous) {
+        if ($user) {
             $originalLocale = App::getLocale();
             $userLocale = $user->locale ?? $user->lang ?? $originalLocale;
 
@@ -27,13 +28,13 @@ class SendComplaintNotification
 
             try {
                 if ($event instanceof ComplaintStatusUpdated) {
-                    $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                    $statusValue = $complaint->status instanceof ComplaintStatus
                         ? $complaint->status->value
                         : (string) $complaint->status;
 
-                    $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
+                    $statusLabel = $complaint->status instanceof ComplaintStatus
                         ? $complaint->status->label()
-                        : $statusValue;
+                        : __("labels.complaint_status.{$statusValue}");
 
                     $user->notify(new BaseNotification(
                         title: __('notifications.complaint_status_updated.title'),
@@ -67,9 +68,12 @@ class SendComplaintNotification
                 App::setLocale($originalLocale);
             }
 
-            return;
+            return; // إنهاء التنفيذ هنا لأن الإشعار أُرسل للمستخدم المسجل
         }
 
+        // ----------------------------------------------------
+        // هذا القسم الآن مخصص للزوار (Guests) حصراً
+        // ----------------------------------------------------
         if ($complaint->device_id) {
             $tokens = UserDeviceToken::where('device_id', $complaint->device_id)
                 ->pluck('fcm_token')
@@ -86,14 +90,13 @@ class SendComplaintNotification
             $data = [];
 
             if ($event instanceof ComplaintStatusUpdated) {
-                // استخراج الحالة بأمان للزائر أيضاً
-                $statusValue = is_object($complaint->status) && property_exists($complaint->status, 'value')
+                $statusValue = $complaint->status instanceof ComplaintStatus
                     ? $complaint->status->value
                     : (string) $complaint->status;
 
-                $statusLabel = is_object($complaint->status) && method_exists($complaint->status, 'label')
+                $statusLabel = $complaint->status instanceof ComplaintStatus
                     ? $complaint->status->label()
-                    : $statusValue;
+                    : __("labels.complaint_status.{$statusValue}");
 
                 $title = __('notifications.complaint_status_updated.title');
                 $body  = __('notifications.complaint_status_updated.body', [
