@@ -63,6 +63,8 @@ return [
         'merged_successfully'   => 'تم دمج الشكاوى المحددة بنجاح.',
         'unmerged_successfully' => 'تم فك دمج الشكوى بنجاح.',
 
+        'status_updated'        => 'تم تحديث حالة الشكوى بنجاح',
+
         'history' => [
             'merged_internal'   => 'تم دمج هذه الشكوى إدارياً للربط مع شكوى مشابهة.',
             'unmerged_internal' => 'تم فك دمج هذه الشكوى وإعادة فتحها كطلب مستقل.',

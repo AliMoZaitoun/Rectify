@@ -64,6 +64,8 @@ return [
         'merged_successfully'   => 'Complaints merged successfully.',
         'unmerged_successfully' => 'Complaint unmerged successfully.',
 
+        'status_updated'        => 'Complaint status has been changed successfully',
+
         'history' => [
             'merged_internal'   => 'This complaint was internally merged to link with a similar issue.',
             'unmerged_internal' => 'This complaint was unmerged and reopened as an independent request.',
