@@ -86,6 +86,9 @@ class ClientDAO
                         $q->where('status', 'rejected')
                             ->where('created_at', '>=', $sinceDate);
                     }, '>', 0);
+            })->whereDoesntHave('compensations', function ($q) use ($sinceDate) {
+                $q->where('status', 'granted')
+                    ->where('created_at', '>=', $sinceDate);
             })
             ->get();
     }
