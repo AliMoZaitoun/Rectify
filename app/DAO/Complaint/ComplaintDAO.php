@@ -18,11 +18,13 @@ class ComplaintDAO
             ->when(! empty($filters['status']), fn($q) => $q->where('status', $filters['status']))
             ->when(! empty($filters['priority']), fn($q) => $q->where('priority', $filters['priority']))
             ->when(! empty($filters['category_id']), fn($q) => $q->where('category_id', $filters['category_id']))
-            ->when(
-                isset($filters['is_spam']),
-                fn($q) =>
-                $q->where('is_spam', filter_var($filters['is_spam'], FILTER_VALIDATE_BOOLEAN))
-            )
+            ->where(function ($q) use ($filters) {
+                if (!isset($filters['is_spam'])) {
+                    $q->where('is_spam', false)->orWhereNull('is_spam');
+                } elseif ($filters['is_spam'] !== 'all') {
+                    $q->where('is_spam', filter_var($filters['is_spam'], FILTER_VALIDATE_BOOLEAN));
+                }
+            })
             ->latest()
             ->paginate($perPage);
     }

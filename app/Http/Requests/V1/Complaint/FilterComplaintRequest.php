@@ -21,11 +21,12 @@ class FilterComplaintRequest extends FormRequest
             'priority'    => ['nullable', 'string', new Enum(ComplaintPriority::class)],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
+            'is_spam'     => ['nullable']
         ];
     }
 
     public function filters(): array
     {
-        return $this->only(['status', 'priority', 'category_id']);
+        return $this->only(['status', 'priority', 'category_id', 'is_spam']);
     }
 }
