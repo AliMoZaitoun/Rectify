@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('complaint_compensations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('complaint_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('complaint_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('approved_by_id')->nullable()->constrained('employees');

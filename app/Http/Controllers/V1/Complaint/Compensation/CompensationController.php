@@ -65,6 +65,22 @@ class CompensationController extends Controller
         return $this->useResource($compensation, DashboardCompensationResource::class, __('messages.common.stored'));
     }
 
+    public function storeWithoutComplaint(StoreCompensationRequest $request, int $clientId)
+    {
+        $employee = Auth::user()?->employee;
+
+        $dto = CompensationDTO::fromRequest(
+            request: $request,
+            complaintId: null,
+            clientId: $clientId,
+            employeeId: $employee?->id
+        );
+
+        $compensation = $this->compensationService->compensate($dto);
+
+        return $this->useResource($compensation, DashboardCompensationResource::class, __('messages.common.stored'));
+    }
+
     public function showByComplaint(int $complaintId)
     {
         $compensation = $this->compensationService->getCompensationForComplaint($complaintId, ['approvedBy', 'client']);

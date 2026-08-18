@@ -38,6 +38,12 @@ class EmployeeBranchController extends Controller
         return $this->useResource($emp_dep, EmployeeBranchResource::class);
     }
 
+    public function byBranch(int $branchId)
+    {
+        $employees = $this->employeeBranchService->byBranch($branchId);
+        return $this->successCollection($employees, EmployeeBranchResource::class);
+    }
+
     public function update(int $id, Request $request)
     {
         $dto = UpdateEmployeeBranchDTO::fromRequest($request->all());

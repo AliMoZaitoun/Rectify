@@ -41,33 +41,52 @@ class CompensationService
     public function compensate(CompensationDTO $dto): ComplaintCompensation
     {
         return $this->transaction->execute(function () use ($dto) {
-            $complaint = $this->complaintDAO->byId($dto->complaintId);
 
-            if ($complaint->status !== ComplaintStatus::RESOLVED) {
-                throw new UnresolvedComplaintCompensationException();
-            }
+            $complaint = null;
+            $branchId = null;
+            $isAnonymous = false;
+            $existing = null;
 
-            if ($complaint->parent_id !== null) {
-                throw new CannotModifyMergedComplaintException();
-            }
+            if ($dto->complaintId) {
+                $complaint = $this->complaintDAO->byId($dto->complaintId);
 
-            $existing = $this->compensationDAO->byComplaintId($dto->complaintId);
+                if ($complaint->status !== ComplaintStatus::RESOLVED->value && $complaint->status !== ComplaintStatus::RESOLVED) {
+                    throw new UnresolvedComplaintCompensationException();
+                }
 
-            if ($existing) {
-                if ($existing->status !== CompensationStatus::REJECTED->value) {
+                if ($complaint->parent_id !== null) {
+                    throw new CannotModifyMergedComplaintException();
+                }
+
+                $existing = $this->compensationDAO->byComplaintId($dto->complaintId);
+
+                if ($existing && $existing->status !== CompensationStatus::REJECTED->value) {
                     throw new ComplaintAlreadyCompensatedException();
                 }
+
+                $branchId = $complaint->branch_id;
+                $isAnonymous = (bool) $complaint->is_anonymous || is_null($dto->clientId);
+            } else {
+                if (is_null($dto->clientId)) {
+                    throw new \InvalidArgumentException('يجب تحديد العميل في حال كان التعويض غير مرتبط بشكوى.');
+                }
+
+                $employee = Employee::with('currentBranch')->find($dto->approvedById);
+                $branchId = $employee?->currentBranch?->branch_id;
+
+                $isAnonymous = false;
             }
 
             $employeeLimit = $this->getEmployeeCompensationLimit($dto->approvedById);
             $exceedsPersonalLimit = $dto->amount > $employeeLimit;
 
-            $exceedsBranchBudget = $this->checkBranchBudgetExceeded($complaint->branch_id, $dto->type, $dto->amount);
+            $exceedsBranchBudget = false;
+            if ($branchId) {
+                $exceedsBranchBudget = $this->checkBranchBudgetExceeded($branchId, $dto->type, $dto->amount);
+            }
 
             $requiresApproval = $exceedsPersonalLimit || $exceedsBranchBudget;
-
-            $isAnonymous = (bool) $complaint->is_anonymous || is_null($dto->clientId);
-            $isPoints = ($dto->type === CompensationType::POINTS && $dto->amount > 0);
+            $isPoints = ($dto->type === CompensationType::POINTS->value || $dto->type === CompensationType::POINTS) && $dto->amount > 0;
 
             if ($requiresApproval) {
                 $status = CompensationStatus::PENDING_APPROVAL;
@@ -81,14 +100,14 @@ class CompensationService
 
             $compensationData = [
                 'complaint_id'   => $dto->complaintId,
-                'branch_id'      => $complaint->branch_id,
+                'branch_id'      => $branchId,
                 'client_id'      => $dto->clientId,
                 'approved_by_id' => $dto->approvedById,
-                'type'           => $dto->type->value,
+                'type'           => $dto->type instanceof CompensationType ? $dto->type->value : $dto->type,
                 'amount'         => $dto->amount,
                 'coupon_code'    => $dto->couponCode,
                 'notes'          => $dto->notes,
-                'status'         => $status->value,
+                'status'         => $status instanceof CompensationStatus ? $status->value : $status,
                 'granted_at'     => $grantedAt,
             ];
 
@@ -99,14 +118,13 @@ class CompensationService
                 $compensation = $this->compensationDAO->store($compensationData);
             }
 
-            if ($status === CompensationStatus::GRANTED && $isPoints) {
+            if ($status === CompensationStatus::GRANTED && $isPoints && $dto->clientId) {
                 $this->clientDAO->incrementPoints($dto->clientId, (int) $dto->amount);
             }
 
             return $compensation;
         });
     }
-
     public function updateStatus(int $compensationId, CompensationStatus $newStatus): ComplaintCompensation
     {
         return $this->transaction->execute(function () use ($compensationId, $newStatus) {

@@ -39,6 +39,11 @@ class EmployeeBranchService
         return $this->employeeBranchDAO->show($id) ?? throw new NotFoundException("Employee-Branch");
     }
 
+    public function byBranch(int $branchId)
+    {
+        return $this->employeeBranchDAO->byBranch($branchId);
+    }
+
 
     public function update(int $id, UpdateEmployeeBranchDTO $dto)
     {

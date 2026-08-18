@@ -25,6 +25,11 @@ class EmployeeBranchDAO
         return EmployeeBranch::where('id', $id)->with(['employee', 'branch'])->first();
     }
 
+    public function byBranch(int $branchId)
+    {
+        return EmployeeBranch::where('branch_id', $branchId)->with(['employee', 'branch'])->get();
+    }
+
 
     public function update(int $id, UpdateEmployeeBranchDTO $dto)
     {

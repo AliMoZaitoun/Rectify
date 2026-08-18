@@ -92,13 +92,15 @@ Route::prefix('employee-branch')->group(function () {
     Route::post('', [EmployeeBranchController::class, 'store']);
     Route::put('/{id}', [EmployeeBranchController::class, 'update']);
     Route::delete('/{id}', [EmployeeBranchController::class, 'destroy']);
+
+    Route::get('byBranch/{branch_id}', [EmployeeBranchController::class, 'byBranch']);
 });
 
-Route::prefix('employee')->group(function () {
-    Route::get('', [EmployeeController::class, 'index']);
-    Route::post('', [EmployeeController::class, 'store']);
-    Route::put('/{id}', [EmployeeController::class, 'update']);
-    Route::delete('/{id}', [EmployeeController::class, 'destroy']);
+Route::prefix('employee')->middleware('auth:sanctum')->group(function () {
+    Route::get('', [EmployeeController::class, 'index'])->middleware(['permission:read.employee']);
+    Route::post('', [EmployeeController::class, 'store'])->middleware(['permission:create.employee']);
+    Route::put('/{id}', [EmployeeController::class, 'update'])->middleware(['permission:update.employee']);
+    Route::delete('/{id}', [EmployeeController::class, 'destroy'])->middleware(['permission:delete.employee']);
 });
 
 // Role
@@ -145,9 +147,9 @@ Route::prefix('category')->group(function () {
     Route::get('/{id}', [CategoryController::class, 'show']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::post('/', [CategoryController::class, 'store']);
-        Route::put('/{id}', [CategoryController::class, 'update']);
-        Route::delete('/{id}', [CategoryController::class, 'destroy']);
+        Route::post('/', [CategoryController::class, 'store'])->middleware(['permission:create.category']);
+        Route::put('/{id}', [CategoryController::class, 'update'])->middleware(['permission:update.category']);
+        Route::delete('/{id}', [CategoryController::class, 'destroy'])->middleware(['permission:delete.category']);
     });
 });
 
@@ -220,6 +222,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/', [CompensationController::class, 'store']);
         Route::get('/', [CompensationController::class, 'showByComplaint']);
     });
+
+    Route::post('clients/{clientId}/compensations', [CompensationController::class, 'storeWithoutComplaint']);
 
     Route::get('dashboard/clients/churn-alerts', [ChurnRiskController::class, 'index']);
 

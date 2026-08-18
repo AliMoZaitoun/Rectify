@@ -26,12 +26,22 @@ class EmployeeService
 
     public function index()
     {
-        $employees = $this->employeeDAO->index();
-        if (sizeof($employees) <= 0)
-            throw new NotFoundException("Employees");
-        return $employees;
-    }
+        $user = auth()->user();
+        $filters = [];
 
+        if ($user && !in_array($user->type, ['admin', 'super_admin'])) {
+            $user->loadMissing('employee.currentBranch');
+            $employee = $user->employee;
+
+            if ($employee && $employee->currentBranch) {
+                $filters['branch_id'] = $employee->currentBranch->branch_id;
+            } else {
+                $filters['branch_id'] = -1;
+            }
+        }
+
+        return $this->employeeDAO->index($filters);
+    }
     public function store(CreateUserDTO $userDTO, CreateEmployeeDTO $employeeDTO)
     {
         return $this->transaction->execute(function () use ($userDTO, $employeeDTO) {

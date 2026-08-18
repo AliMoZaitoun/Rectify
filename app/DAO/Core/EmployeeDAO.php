@@ -10,13 +10,21 @@ use App\Models\Core\Employee;
 class EmployeeDAO
 {
 
-    public function index()
+    public function index(array $filters = [])
     {
-        return Employee::with([
-            'user',
-            'currentBranch.branch',
-            'employeeBranches.branch',
-        ])->get();
+        $query = Employee::with(['user', 'currentBranch.branch', 'employeeBranches.branch']);
+
+        if (isset($filters['branch_id'])) {
+            if ($filters['branch_id'] === -1) {
+                return collect();
+            }
+
+            $query->whereHas('currentBranch', function ($q) use ($filters) {
+                $q->where('branch_id', $filters['branch_id']);
+            });
+        }
+
+        return $query->get();
     }
 
     public function store(CreateEmployeeDTO $employeeDTO)

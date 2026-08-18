@@ -8,7 +8,7 @@ use App\Http\Requests\V1\Complaint\StoreCompensationRequest;
 class CompensationDTO
 {
     public function __construct(
-        public int $complaintId,
+        public ?int $complaintId,
         public ?int $clientId,
         public ?int $approvedById,
         public CompensationType $type,
@@ -20,7 +20,7 @@ class CompensationDTO
 
     public static function fromRequest(
         StoreCompensationRequest $request,
-        int $complaintId,
+        ?int $complaintId,
         ?int $clientId,
         ?int $employeeId
     ): self {
