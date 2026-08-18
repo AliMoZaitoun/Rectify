@@ -18,7 +18,7 @@ class AssignEmployeeBranchRequest extends FormRequest
             'employee_id' => 'required|integer|exists:employees,id',
             'branch_id' => 'required|integer|exists:branches,id',
             'position' => 'required|string|in:manager,staff',
-            'from_date' => 'required|date',
+            'from_date' => 'nullable|date',
             'to_date' => 'nullable|date',
         ];
     }

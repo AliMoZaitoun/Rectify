@@ -18,7 +18,7 @@ class AssignEmployeeBranchDTO
             employee_id: $request['employee_id'],
             branch_id: $request['branch_id'],
             position: $request['position'],
-            from_date: $request['from_date'],
+            from_date: $request['from_date'] ?? date('Y-m-d'),
             to_date: $request['to_date'] ?? null
         );
     }
