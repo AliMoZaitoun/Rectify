@@ -78,12 +78,11 @@ class EmployeeService
         return $employee;
     }
 
-    public function update(int $id, UpdateUserDTO $userDTO, UpdateEmployeeDTO $employeeDTO)
+    public function update(int $id, UpdateUserDTO $userDTO)
     {
-        return $this->transaction->execute(function () use ($id, $userDTO, $employeeDTO) {
+        return $this->transaction->execute(function () use ($id, $userDTO) {
             $employee = $this->show($id);
             $this->userDAO->update($employee->user->id, $userDTO);
-            $this->employeeDAO->update($id, $employeeDTO);
             $employee->refresh();
             return $employee;
         });

@@ -47,13 +47,13 @@ class EmployeeController extends Controller
     }
 
 
-    public function update(int $id, Request $request)
+    public function update(int|string $id, Request $request)
     {
         $userDTO = UpdateUserDTO::fromRequest($request->all());
 
-        $employeeDTO = UpdateEmployeeDTO::fromRequest($request->all());
+        // $employeeDTO = UpdateEmployeeDTO::fromRequest($request->all());
 
-        $employee = $this->employeeService->update($id, $userDTO, $employeeDTO);
+        $employee = $this->employeeService->update($id, $userDTO);
         $data['user'] = $this->resolveUserResource($employee->user);
         return $this->successResponse($data, __('messages.common.updated'));
     }
