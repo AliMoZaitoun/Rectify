@@ -21,6 +21,7 @@ use App\Exceptions\V1\Complaint\CouponAlreadyRedeemedException;
 use App\Exceptions\V1\Complaint\CouponNotGrantedException;
 use App\Exceptions\V1\Complaint\DeviceIdRequiredException;
 use App\Exceptions\V1\Complaint\InvalidCouponException;
+use App\Exceptions\V1\Complaint\MaxReopenLimitReachedException;
 use App\Exceptions\V1\Complaint\UnresolvedComplaintCompensationException;
 use App\Exceptions\V1\Core\EmployeeRequiredException;
 use App\Exceptions\V1\EmailAlreadyVerifiedException;
@@ -178,6 +179,10 @@ class Handler
         });
 
         $exceptions->render(function (InsufficientPointsException $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
+        });
+
+        $exceptions->render(function (MaxReopenLimitReachedException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         });
     }
